@@ -1,6 +1,13 @@
-javac -cp stanford-postagger.jar filename.java
+WordNet must be installed before running code
 
-java -cp ".;stanford-postagger.jar;lib\slf4j-api.jar" filename > out.txt
+export environment variable WNHOME before running code. WNHOME is the Wordnet directory
+for Windows it would look like "C:\Program Files\WordNet-3.0"
+and for Linux/Unix it would look like "/usr/local/WordNet-3.0"
+
+before running code 
+javac -cp stanford-postagger.jar;deps\edu.mit.jwi_2.4.0.jar filename.java
+
+java -cp ".;stanford-postagger.jar;lib\slf4j-api.jar;deps\edu.mit.jwi_2.4.0.jar;" filename > out.txt
 
 
 ==============

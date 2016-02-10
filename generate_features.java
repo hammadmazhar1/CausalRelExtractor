@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Scanner;
 import java.util.Set;
+import java.net.*;
+import java.io.*;
 
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -23,7 +25,9 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-
+import edu.mit.jwi.*;
+import edu.mit.jwi.item.*;
+import edu.mit.jwi.morph.*;
 //=================================================================================
 //=================================================================================
 
@@ -325,6 +329,43 @@ public class generate_features {
    * words, lemmas, part-of-speech tags and all senses of both verbs from WordNet.
    */
   static List<String> feature_verbs(Word_Pair wp, List<TaggedWord> tSentence) {
+    List<String> returnValue = new ArrayList<>();
+     // construct the URL to the Wordnet dictionary directory
+    
+
+    String wnhome = System.getenv("WNHOME");
+    String path = wnhome + File.separator + "dict";
+    URL url = null;
+    try{ url = new URL("file", null, path); } 
+    catch(MalformedURLException e){ e.printStackTrace(); }
+    if(url == null) return null;
+    
+    // construct the dictionary object and open it
+    IDictionary dict = new Dictionary(url);
+    try {dict.open();}
+    catch(IOException e){e.printStackTrace();}
+    //look at stems
+    
+    WordnetStemmer stemmer = new WordnetStemmer(dict);
+    List<String> strings = stemmer.findStems(wp.word_one,POS.VERB);
+    String lemma = strings.get(0);
+
+    IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
+
+    //add word one, its lemma, POS tag and sense keys
+    returnValue.add(wp.word_one);
+    returnValue.add(lemma);
+    for (int i = 0; i < tSentence.size(); i++) {
+      if (tSentence.get(i).value().equals(wp.word_one)) {
+        returnValue.add(tSentence.get(i).tag());
+        break;
+      }
+    }
+    for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      IWordID wordID = idxWord.getWordIDs().get(i);
+      IWord word = dict.getWord(wordID);
+      returnValue.add(word.getSenseKey().toString());
+    }
   	return null;
   }
 
@@ -443,6 +484,8 @@ public class generate_features {
 
 	public static void main(String[] args) throws Exception {
 		pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
+		//set Wordnet directory
+		
 
     // Populate the Words and Verb-Verb pair data.
     try {
