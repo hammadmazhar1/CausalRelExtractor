@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,8 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Scanner;
 import java.util.Set;
-import java.net.*;
-import java.io.*;
 
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -25,9 +24,7 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import edu.mit.jwi.*;
-import edu.mit.jwi.item.*;
-import edu.mit.jwi.morph.*;
+
 //=================================================================================
 //=================================================================================
 
@@ -52,14 +49,8 @@ class Word_Count implements Comparable<Word_Count> {
     documentCount = 1;
   }
 
-  public Word_Count(String w1, int _document, int _actual) {
-    word = w1.toLowerCase();
-    actualCount = _actual;
-    documentCount = _document;
-  }
-
   public String print() {
-    return Integer.toString(documentCount) + "            " + Integer.toString(actualCount) + "          " + word;
+    return Integer.toString(documentCount) + " " + Integer.toString(actualCount) + " " + word;
   }
 
   public boolean equals(Word_Count wc) {
@@ -123,27 +114,12 @@ class Word_Pair implements Comparable<Word_Pair> {
     documentCount = 1;
   }
 
-  public Word_Pair(String w1, String w2, int _document, int _actual) {
-    w1 = w1.toLowerCase();
-    w2 = w2.toLowerCase();
-    if (w1.compareTo(w2) < 0) {
-      word_one = w1;
-      word_two = w2;
-    } else {
-      word_one = w2;
-      word_two = w1;
-    }
-
-    actualCount = _actual;
-    documentCount = _document;
-  }
-
   public String toString() {
     return word_one + " - " + word_two;
   }
 
   public String print() {
-    return Integer.toString(documentCount) + "\t" + Integer.toString(actualCount) + "\t" + toString();
+    return Integer.toString(documentCount) + " " + Integer.toString(actualCount) + " " + toString();
   }
 
   @Override
@@ -188,8 +164,8 @@ class Word_Pair implements Comparable<Word_Pair> {
 //=================================================================================
 //=================================================================================
 
-public class generate_features {
-	static List<File>       all_files         = new ArrayList<>();
+public class create_corpus {
+  static List<File>       all_files         = new ArrayList<>();
   static List<Word_Pair>  all_verb_pairs    = new ArrayList<>();
   static List<Word_Count> doc_count_words   = new ArrayList<>();
   static List<String>     phrases_all       = Arrays.asList("because", "for this reason", "for that reason", "consequently", "as a consequence of", "as a result of", "but", "in short", "in other words", "whereas", "on the other hand", "nevertheless", "nonetheless", "in spite of", "in contrast", "however", "even", "though", "despite the fact", "conversely", "although");
@@ -203,26 +179,35 @@ public class generate_features {
   //=================================================================================
   //=================================================================================
 
-  public static Word_Count find_WC(String word) {
+  public static void docWordCounter(int id) throws Exception {
+    String content = new Scanner(all_files.get(id)).useDelimiter("\\Z").next().toLowerCase();
+    content = content.replace(".", "");
+    content = content.replace(",", "");
+
+    // Increment document counter for words. Add new words to doc_count_words.
+    Set<String> set = new HashSet<String>(Arrays.asList(content.split(" ")));
+
+    for (String s : set) {
+      Word_Count temp = new Word_Count(s);
+      int index = doc_count_words.indexOf(temp);
+      if (index != -1) {
+        doc_count_words.get(index).documentIncrement();
+      } else {
+        doc_count_words.add(temp);
+        temp.actualIncrement(-1);
+      }
+    }
+
+    // Increment actual counter for words.
     for (Word_Count wc : doc_count_words) {
-      if (wc.word.equals(word)) {
-        return wc;
+      int i = 0;
+      Pattern p = Pattern.compile(wc.word);
+      Matcher m = p.matcher(content);
+      while (m.find()) {
+          i++;
       }
+      wc.actualIncrement(i);
     }
-
-    return null;
-  }
-
-  public static List<Word_Pair> find_WP(String word) {
-    List<Word_Pair> wp_list = new ArrayList<>();
-
-    for (Word_Pair wp : all_verb_pairs) {
-      if (wp.word_one.equals(word) || wp.word_two.equals(word)) {
-        wp_list.add(wp);
-      }
-    }
-
-    return wp_list;
   }
 
   //=================================================================================
@@ -260,8 +245,7 @@ public class generate_features {
     return phraseLocations;
   }
 
-  public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence) {
-    List<Word_Pair> returnValue = new ArrayList<>();
+  public static void findVerbPairs(List<TaggedWord> tSentence) {
     List<Pair> phraseLocations = findPhraseLocations(tSentence);
     int start = 0;
     int end = 0;
@@ -281,9 +265,11 @@ public class generate_features {
         if (tSentence.get(j).tag().startsWith("VB")) {
           verbsBefore.add(tSentence.get(j).word());
 
-          if (find_WC(tSentence.get(j).word()) == null) {
-              pw.println("\nWORD DOES NOT EXIST IN DATABASE: " + tSentence.get(j).word() + "\n");
-            doc_count_words.add(new Word_Count(tSentence.get(j).word()));
+          // Printing
+          if (tSentence.get(j).tag().equals("VB")) {
+            pw.println("\tTAG_BEFORE: " + tSentence.get(j).tag() + " \tWORD: " + tSentence.get(j).word());  
+          } else {
+            pw.println("\tTAG_BEFORE: " + tSentence.get(j).tag() + "\tWORD: " + tSentence.get(j).word());  
           }
         }
       }
@@ -292,10 +278,12 @@ public class generate_features {
       for (int j = phraseLocations.get(i).x+phraseLocations.get(i).y; j < end; j++) {
         if (tSentence.get(j).tag().startsWith("VB")) {
           verbsAfter.add(tSentence.get(j).word());
-
-          if (find_WC(tSentence.get(j).word()) == null) {
-              pw.println("\nWORD DOES NOT EXIST IN DATABASE: " + tSentence.get(j).word() + "\n");
-            doc_count_words.add(new Word_Count(tSentence.get(j).word()));
+          
+          // Printing
+          if (tSentence.get(j).tag().equals("VB")) {
+            pw.println("\tTAG_AFTER : " + tSentence.get(j).tag() + " \tWORD: " + tSentence.get(j).word());  
+          } else {
+            pw.println("\tTAG_AFTER : " + tSentence.get(j).tag() + "\tWORD: " + tSentence.get(j).word());  
           }
         }
       }
@@ -308,184 +296,23 @@ public class generate_features {
 
           // if the verbs are different
           if (!s1.toLowerCase().equals(s2.toLowerCase())) {
-            Word_Pair wp = new Word_Pair(s1, s2);
-            returnValue.add(wp);
-
-            if (!all_verb_pairs.contains(wp)) {
-              pw.println("\nVERB-VERB PAIR DOES NOT EXIST IN DATABASE: " + wp.word_one + "-" + wp.word_two + "\n");
-              all_verb_pairs.add(wp);
-            }
+            all_verb_pairs.add(new Word_Pair(s1, s2));
           }
         }
       }
     }
-    return returnValue;
-  }
 
-  //=================================================================================
-  //=================================================================================
-
-  /**
-   * words, lemmas, part-of-speech tags and all senses of both verbs from WordNet.
-   */
-  static List<String> feature_verbs(Word_Pair wp, List<TaggedWord> tSentence) {
-    List<String> returnValue = new ArrayList<>();
-     // construct the URL to the Wordnet dictionary directory
-    
-
-    String wnhome = System.getenv("WNHOME");
-    String path = wnhome + File.separator + "dict";
-    URL url = null;
-    try{ url = new URL("file", null, path); } 
-    catch(MalformedURLException e){ e.printStackTrace(); }
-    if(url == null) return null;
-    
-    // construct the dictionary object and open it
-    IDictionary dict = new Dictionary(url);
-    try {dict.open();}
-    catch(IOException e){e.printStackTrace();}
-    //look at stems for word one
-    
-    WordnetStemmer stemmer = new WordnetStemmer(dict);
-    List<String> strings = stemmer.findStems(wp.word_one,POS.VERB);
-    String lemma = strings.get(0);
-
-    IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
-
-    //add word one, its lemma, POS tag and sense keys
-    returnValue.add(wp.word_one);
-    returnValue.add(lemma);
-    for (int i = 0; i < tSentence.size(); i++) {
-      if (tSentence.get(i).value().equals(wp.word_one)) {
-        returnValue.add(tSentence.get(i).tag());
-        break;
+    // Removing duplicate Verb Pairs and incrementing their count.
+    Collections.sort(all_verb_pairs);
+    int size = all_verb_pairs.size() - 1;
+    for (int j = 0; j < size; j++) {
+      if (all_verb_pairs.get(j).equals(all_verb_pairs.get(j+1))) {
+        all_verb_pairs.get(j).actualIncrement();
+        all_verb_pairs.remove(j+1);
+        j--;
+        size--;
       }
     }
-    for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      IWordID wordID = idxWord.getWordIDs().get(i);
-      IWord word = dict.getWord(wordID);
-      returnValue.add(word.getSenseKey().toString());
-    }
-    // look at stems for word 2
-    
-    strings = stemmer.findStems(wp.word_two,POS.VERB);
-    lemma = strings.get(0);
-
-    idxWord = dict.getIndexWord(lemma, POS.VERB);
-
-    //add word two, its lemma, POS tag and sense keys
-    returnValue.add(wp.word_two);
-    returnValue.add(lemma);
-    for (int i = 0; i < tSentence.size(); i++) {
-      if (tSentence.get(i).value().equals(wp.word_two)) {
-        returnValue.add(tSentence.get(i).tag());
-        break;
-      }
-    }
-    for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      IWordID wordID = idxWord.getWordIDs().get(i);
-      IWord word = dict.getWord(wordID);
-      returnValue.add(word.getSenseKey().toString());
-    }
-  	return returnValue;
-  }
-
-  /**
-   * words, lemmas, part-of-speech tags and all senses of the words of both verb phrases. We take 
-   * senses from Word for only verbs and nouns. In order to collect the verb phrases, we use Stanford's 
-   * syntactic parser
-   */
-  static List<String> feature_verbPhrases(Word_Pair wp, List<TaggedWord> tSentence) {
-  	return null;
-  }
-
-  /**
-   * words, lemmas, part-of-speech tags and all senses of the subject and object of both verbs.
-   */
-  static List<String> feature_verbArguments(Word_Pair wp, List<TaggedWord> tSentence) {
-  	return null;
-  }
-
-  /**
-   * For this feature, we take the cross product of both events of a pair ev_i-ev_j where 
-   * ev_i = [subject_vi] vi [object_vj] and ev_j = [subject_vj] vj [object_vj].
-   */
-  static List<String> feature_verbsAndArgumentPairs(Word_Pair wp, List<TaggedWord> tSentence) {
-  	return null;
-  }
-
-  /**
-   * lemmas of all words from the mincontext.
-   */
-  static List<TaggedWord> feature_contextWords(Word_Pair wp, List<TaggedWord> tSentence) {
-  	List<TaggedWord> returnValue = new ArrayList<>();
-  	List<Pair> phraseLocations = findPhraseLocations(tSentence);
-  	int[] word_locations = new int[2];
-  	word_locations[0] = -1;
-  	word_locations[1] = -1;
-
-  	for (int i = 0; i < tSentence.size(); i++) {
-  		if (wp.word_one.equals(tSentence.get(i).word())) {
-  			word_locations[0] = i;
-  		}
-  		if (wp.word_two.equals(tSentence.get(i).word())) {
-  			word_locations[1] = i;
-  		}
-  	}
-
-  	// Establish bounds for the words in the verb-verb pair (one of the pair may not exist in this sentence)
-  	// Add all the words in the sentence between the bounds for each verb to a List and return it.
-  	for (int word_location : word_locations) {
-  		if (word_location != -1) {
-	  		int lowerBound = 0;
-	  		int upperBound = tSentence.size();
-	  		for (Pair p : phraseLocations) {
-	  			if (p.x+p.y > lowerBound && p.x+p.y < word_location) {
-	  				lowerBound = p.x+p.y;
-	  			} else if (p.x < upperBound && p.x > word_location) {
-	  				upperBound = p.x;
-	  			}
-	  		}
-
-	  		for (int i = lowerBound; i < upperBound; i++) {
-	  			returnValue.add(tSentence.get(i));
-	  		}
-	  	}
-  	}
-	  return returnValue;
-  }
-
-  /**
-   * all main verbs and their lemmas from the mincontext.
-   */
-  static List<TaggedWord> feature_contextMainVerbs(List<TaggedWord> minContext) {
-  	List<TaggedWord> returnValue = new ArrayList<>();
-  	for (TaggedWord tw : minContext) {
-  		if (tw.tag().startsWith("VB")) {
-  			returnValue.add(tw);
-  		}
-  	}
-
-  	// Look up lemmas of these verbs and add them to the list.
-
-  	return returnValue;
-  }
-
-  /**
-   * the pairs of main verbs from the mincontext. The lemmas are taken from the feature 
-   * "Context Main Verbs" and then the pairs on these lemmas are used as this feature.
-   */
-  static List<Word_Pair> feature_contextMainVerbPairs(List<TaggedWord> contextMainVerbs) {
-  	List<Word_Pair> returnValue = new ArrayList<>();
-  	for (int i = 0; i < contextMainVerbs.size(); i++) {
-  		for (int j = 0; j < contextMainVerbs.size(); j++) {
-	  		if (i != j) {
-	  			Word_Pair wp = new Word_Pair(contextMainVerbs.get(i).word(), contextMainVerbs.get(j).word());
-	  			returnValue.add(wp);
-	  		}
-	  	}		
-  	}
-  	return returnValue;
   }
 
   //=================================================================================
@@ -503,42 +330,13 @@ public class generate_features {
     }
   }
 
-	public static void main(String[] args) throws Exception {
-		pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
-		//set Wordnet directory
-		
+  //=================================================================================
+  //=================================================================================
 
-    // Populate the Words and Verb-Verb pair data.
-    try {
-      Scanner scanner = new Scanner(new File("dictionary.txt"));
-      totalNumWords = scanner.nextInt();
-      totalSentences = scanner.nextInt();
-      while (scanner.hasNextLine()) {
-        int i1 = scanner.nextInt();
-        int i2 = scanner.nextInt();
-        String s = scanner.next();
-        Word_Count wc = new Word_Count(s, i1, i2);
-        doc_count_words.add(wc);
-      }
-      scanner.close();
-
-      scanner = new Scanner(new File("verb-verb.txt"));
-      while (scanner.hasNextLine()) {
-        int i1 = scanner.nextInt();
-        int i2 = scanner.nextInt();
-        String s1 = scanner.next();
-        String s2 = scanner.next();
-        s2 = scanner.next();
-        Word_Pair wp = new Word_Pair(s1, s2, i1, i2);
-        all_verb_pairs.add(wp);
-      }
-      scanner.close();      
-    } catch (Exception e) {
-      System.out.println("\nAN EXCEPTION OCCURRED:\n" + e.toString() + "\n");
-      System.exit(0);
-    }
+  public static void main(String[] args) throws Exception {
+    pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
     
-    // Open the file which has to be analyzed.
+    // Get list of all files which have to be parsed in order to construct the (non-)Causal verb-pairs.
     File[] files = new File(dirName).listFiles();
     iterateFiles(files);
 
@@ -553,8 +351,16 @@ public class generate_features {
     // Go through each file in the list.
     for (int id = 0; id < all_files.size(); id++) {
 
+      // Print each file's name.
+      String fileName = all_files.get(id).getPath();
+      pw.print("\n***\n" + fileName + "\n***\n");
+
+      // Check for occurrences for the (non-)causal strings in the current document, increment the occurrence counter for use in IDF function.
+      // Find out which (non-)causal string to check for in the current document
+      docWordCounter(id);
+
       // Open the file.
-      BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(all_files.get(id)), "utf-8"));
+      BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "utf-8"));
       
       // Produces a list of sentences from the document.
       // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/DocumentPreprocessor.html
@@ -563,7 +369,8 @@ public class generate_features {
 
       // Go through each sentence in the document.
       for (List<HasWord> sentence : documentPreprocessor) {
-        
+        totalSentences++;
+
         // Print the sentence
         String sentenceString = Sentence.listToString(sentence, false).toLowerCase();
         pw.println(sentenceString);
@@ -574,9 +381,81 @@ public class generate_features {
         // Print the tagged sentence.
         pw.println(Sentence.listToString(tSentence, false));
 
+        // Make a backup of all_verb_pairs so we can check for differences and increment document count.
+        List<Word_Pair> oldList = new ArrayList<>();
+        List<Integer> oldActualCounts = new ArrayList<>();
+        for (Word_Pair wp : all_verb_pairs) {
+          oldList.add(wp);
+          int i = wp.actualCount;
+          oldActualCounts.add(i);
+        }
+
+        // Find pairs of verbs before and after the unambiguous discourse markers.
+        findVerbPairs(tSentence);
+
+        // Incrementing the document count for the pairs.
+        for (int i = 0; i < oldList.size(); i++) {
+          if (oldList.get(i).actualCount != oldActualCounts.get(i)) {
+            oldList.get(i).documentIncrement();
+          }
+        }
+
+        pw.println("\n");
       }
     }
 
+    // Total number of words.
+    totalNumWords = 0;
+    ////////////////////////////////////////////////////////////////////
+
+    // Printing the Inverse Document Frequency Count
+    pw.print("DOCUMENT     ACTUAL     WORD\n");
+    Collections.sort(doc_count_words);
+    for (int i = 0; i < doc_count_words.size(); i++) {
+      pw.println(doc_count_words.get(i).print());
+    }
+    pw.print("\n\n");
+
+    // Printing the Verb Pairs.
+    pw.print("Verb Pairs\n");
+    for (Word_Pair wp : all_verb_pairs) {
+      pw.println(wp.print());
+    }
+
+    // Printing a sample IDF.
+    // pw.print("\nIDF\n\t");
+    // IDF(all_verb_pairs.get(13));
+
+    // Testing a max function call.
+    // pw.println("MAX = " + Double.toString(max(all_verb_pairs.get(3))));
+
     pw.close();
-	}
+
+    // Output the Words to a file called dictionary.txt;
+    pw = new PrintWriter(new File("dictionary.txt"));
+
+    for (Word_Count wc : doc_count_words) {
+      totalNumWords += wc.actualCount;
+    }
+    pw.println(totalNumWords);
+    pw.println(totalSentences);
+
+    for (int i = 0; i < doc_count_words.size(); i++) {
+      pw.print(doc_count_words.get(i).print());
+      if (i != doc_count_words.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+
+    // Output the Verb-Verb pairs to a file called verb-verb.txt;
+    pw = new PrintWriter(new File("verb-verb.txt"));
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      pw.print(all_verb_pairs.get(i).print());
+      if (i != all_verb_pairs.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+  }
 }
