@@ -344,7 +344,7 @@ public class generate_features {
     IDictionary dict = new Dictionary(url);
     try {dict.open();}
     catch(IOException e){e.printStackTrace();}
-    //look at stems
+    //look at stems for word one
     
     WordnetStemmer stemmer = new WordnetStemmer(dict);
     List<String> strings = stemmer.findStems(wp.word_one,POS.VERB);
@@ -366,7 +366,28 @@ public class generate_features {
       IWord word = dict.getWord(wordID);
       returnValue.add(word.getSenseKey().toString());
     }
-  	return null;
+    // look at stems for word 2
+    
+    strings = stemmer.findStems(wp.word_two,POS.VERB);
+    lemma = strings.get(0);
+
+    idxWord = dict.getIndexWord(lemma, POS.VERB);
+
+    //add word two, its lemma, POS tag and sense keys
+    returnValue.add(wp.word_two);
+    returnValue.add(lemma);
+    for (int i = 0; i < tSentence.size(); i++) {
+      if (tSentence.get(i).value().equals(wp.word_two)) {
+        returnValue.add(tSentence.get(i).tag());
+        break;
+      }
+    }
+    for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      IWordID wordID = idxWord.getWordIDs().get(i);
+      IWord word = dict.getWord(wordID);
+      returnValue.add(word.getSenseKey().toString());
+    }
+  	return returnValue;
   }
 
   /**
