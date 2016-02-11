@@ -1,3 +1,0 @@
-javac -cp stanford-postagger.jar filename.java
-
-java -cp ".;stanford-postagger.jar;lib\slf4j-api.jar" filename > out.txt

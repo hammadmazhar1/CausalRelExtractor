@@ -44,7 +44,7 @@ PRT - Particle. Category for words that should be tagged RP.
 QP - Quantifier Phrase (i.e. complex measure/amount phrase); used within NP.  
 RRC - Reduced Relative Clause.  
 UCP - Unlike Coordinated Phrase.  
-VP - Vereb Phrase.  
+VP - Verb Phrase.  
 WHADJP - Wh-adjective Phrase. Adjectival phrase containing a wh-adverb, as in how hot.  
 WHAVP - Wh-adverb Phrase. Introduces a clause with an NP gap. May be null (containing the 0 complementizer) or lexical, containing a wh-adverb such as how or why.  
 WHNP - Wh-noun Phrase. Introduces a clause with an NP gap. May be null (containing the 0 complementizer) or lexical, containing some wh-word, e.g. who, which book, whose daughter, none of which, or how many leopards.  
@@ -146,3 +146,7 @@ Many of Quirk's predication adjuncts are annotated with -CLR.
 - CLF (cleft) - marks it-clefts ("true clefts") and may be added to the labels S, SINV, or SQ.
 - HLN (headline) - marks headlines and datelines. Note that headlines and datelines always constitute a unit of text that is structurally independent from the following sentence.
 - TTL (title) - is attached to the top node of a title when this title appears inside running text. -TTL implies -NOM. The internal structure of the title is bracketed as usual.
+
+### Universal Dependencies
+
+http://universaldependencies.org/en/dep/all.html

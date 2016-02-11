@@ -1,0 +1,30 @@
+
+
+The monster storm Katrina raged ashore along the Gulf Coast Monday morning .
+raged / VBD
+ashore / RB
+along / IN
+the / DT
+Gulf / NNP
+Coast / NNP
+Monday / NNP
+morning / NN
+(VP (VBD raged)
+  (ADVP (RB ashore))
+  (PP (IN along)
+    (NP (DT the) (NNP Gulf) (NNP Coast) (NNP Monday)))
+  (NP (NN morning)))
+
+
+
+There were early reports of buildings collapsing along the coast .
+collapsing / VBG
+along / IN
+the / DT
+coast / NN
+(VP (VBG collapsing)
+  (PP (IN along)
+    (NP (DT the) (NN coast))))
+
+
+
