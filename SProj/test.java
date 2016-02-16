@@ -33,7 +33,10 @@ public class test {
     }
 
     DocumentPreprocessor tokenizer = new DocumentPreprocessor(new StringReader(s));
+    int i = 0;
     for (List<HasWord> sentence : tokenizer) {
+    	System.out.println(i);
+    	i++;
       List<TaggedWord> tSentence = tagger.tagSentence(sentence);
       for (TaggedWord tw : tSentence) {
         System.out.println(tw.word() + " / " + tw.tag());
@@ -50,6 +53,7 @@ public class test {
         {
           Tree temp = subtree.getChild(0).getChild(0);
           if (temp.value().equals("collapsing") || temp.value().equals("raged")) {
+          	System.out.println("Printing subtree");
             GetWords(subtree);
             phraseList.add(subtree);
             subtree.pennPrint();

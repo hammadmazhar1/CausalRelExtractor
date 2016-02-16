@@ -24,7 +24,9 @@ import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.stanford.nlp.trees.*;
 import edu.mit.jwi.*;
 import edu.mit.jwi.item.*;
 import edu.mit.jwi.morph.*;
@@ -390,13 +392,102 @@ public class generate_features {
   	return returnValue;
   }
 
+  public static List<TaggedWord> GetWords(Tree parse) {
+  	MaxentTagger tagger;
+  	String taggerPath = "models\\english-left3words-distsim.tagger";
+  	tagger = new MaxentTagger(taggerPath);
+    List<String> list = Arrays.asList("CC", "CD", "DT", "EX", "FW", "IN", "JJ", "JJR", "JJS", "LS", "MD", "NN", "NNS", "NNP", "NNPS", "PDT", "POS", "PRP", "RB", "RBR", "RBS", "RP", "SYM", "TO", "UH", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "WDT", "WP", "WRB", "WP$", "PRP$", "ADJP", "ADVP", "CONJP", "FRAG", "INTJ", "LST", "NAC", "NP", "NX", "PP", "PRN", "PRT", "QP", "RRC", "UCP", "VP", "WHADJP", "WHAVP", "WHNP", "WHPP", "X");
+    String s = "";
+    for (Tree subtree: parse) {
+      if (!list.contains(subtree.value())) {
+        s += subtree.value() + " ";
+      }
+  	}
+    DocumentPreprocessor tokenizer = new DocumentPreprocessor(new StringReader(s));
+    for (List<HasWord> sentence : tokenizer) {
+      List<TaggedWord> tSentence = tagger.tagSentence(sentence);
+      return tSentence;
+    }
+    return null;
+  }
   /**
    * words, lemmas, part-of-speech tags and all senses of the words of both verb phrases. We take 
    * senses from Word for only verbs and nouns. In order to collect the verb phrases, we use Stanford's 
    * syntactic parser
    */
   static List<String> feature_verbPhrases(Word_Pair wp, List<TaggedWord> tSentence) {
-  	return null;
+    //form wordnet url
+    String wnhome = System.getenv("WNHOME");
+    String path = wnhome + File.separator + "dict";
+    URL url = null;
+    try{ url = new URL("file", null, path); } 
+    catch(MalformedURLException e){ e.printStackTrace(); }
+    if(url == null) return null;
+    
+    // construct the dictionary object and open it
+    IDictionary dict = new Dictionary(url);
+    try {dict.open();}
+    catch(IOException e){e.printStackTrace();}
+    WordnetStemmer stemmer = new WordnetStemmer(dict);
+
+    List<String> returnValue = new ArrayList<>();
+    String parserModel = "models\\englishPCFG.ser.gz";
+    LexicalizedParser lp = LexicalizedParser.loadModel(parserModel);
+    List<HasWord> sentence = Sentence.toWordList((Sentence.listToString(tSentence,false)));
+    
+    
+
+    Tree parse = lp.apply(sentence);
+	for (Tree subTree : parse) {
+    	if (subTree.label().value().equals("VP")){
+    		Tree temp = subTree.getChild(0).getChild(0);
+        	if (temp.value().equals(wp.word_one) || temp.value().equals(wp.word_two)) {
+          		List<TaggedWord> phraseSent = GetWords(subTree);
+          		for (TaggedWord word : phraseSent) {
+            		//if word is a noun
+            		if (word.tag().contains("V")) {
+            			//find word stem
+            			List<String> strings = stemmer.findStems(word.value(),POS.VERB);
+            			String lemma = strings.get(0);
+            			IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
+						//add word, its lemma, POS tag and sense keys
+            			returnValue.add(word.value());
+			            returnValue.add(lemma);
+           				returnValue.add(word.tag());
+     					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      						IWordID wordID = idxWord.getWordIDs().get(i);
+      						IWord iword = dict.getWord(wordID);
+      						returnValue.add(iword.getSenseKey().toString());
+    					}
+    				// word is a noun
+          			} else if(word.tag().contains("N")) {
+          				List<String> strings = stemmer.findStems(word.value(),POS.NOUN);
+            			String lemma = strings.get(0);
+
+			            IIndexWord idxWord = dict.getIndexWord(lemma, POS.NOUN);
+
+            			//add word, its lemma, POS tag and sense keys
+            			returnValue.add(word.value());
+            			returnValue.add(lemma);
+            			returnValue.add(word.tag());
+     		     		for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      						IWordID wordID = idxWord.getWordIDs().get(i);
+      						IWord iword = dict.getWord(wordID);
+      						returnValue.add(iword.getSenseKey().toString());
+    					}
+			        } else {
+          				List<String> strings = stemmer.findStems(word.value(),null);
+            			String lemma = strings.get(0);
+            			//add word, its lemma and POS tag
+            			returnValue.add(word.value());
+            			returnValue.add(lemma);
+            			returnValue.add(word.tag());
+          			}
+        		}
+        	}
+      	}
+    }
+    return returnValue;
   }
 
   /**
