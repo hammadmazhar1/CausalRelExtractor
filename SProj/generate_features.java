@@ -25,6 +25,7 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.parser.nndep.DependencyParser;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.trees.*;
 import edu.mit.jwi.*;
@@ -494,7 +495,74 @@ public class generate_features {
    * words, lemmas, part-of-speech tags and all senses of the subject and object of both verbs.
    */
   static List<String> feature_verbArguments(Word_Pair wp, List<TaggedWord> tSentence) {
-  	return null;
+  	List<String> returnValue = new ArrayList<String>();
+  	DependencyParser parser = DependencyParser.loadFromModelFile("models\\english_UD.gz");
+  	GrammaticalStructure gs = parser.predict(tSentence);
+  	String wnhome = System.getenv("WNHOME");
+    String path = wnhome + File.separator + "dict";
+    URL url = null;
+    try{ url = new URL("file", null, path); } 
+    catch(MalformedURLException e){ e.printStackTrace(); }
+    if(url == null) return null;
+    
+    // construct the dictionary object and open it
+    IDictionary dict = new Dictionary(url);
+    try {dict.open();}
+    catch(IOException e){e.printStackTrace();}
+    
+
+  	List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
+  	for (TypedDependency td : tdl) {
+  		if (td.gov().value().equals(wp.word_one) || td.gov().value().equals(wp.word_two)) {
+  			String relation = td.reln().getShortName();
+  			if (relation.contains("obj")){
+  				String posTag = null;
+  				for (TaggedWord t : tSentence) {
+  					if (t.value().equals(td.dep().value())){
+  						posTag = t.tag();
+  						break;
+  					}
+  				}
+  				String lemma = td.dep().lemma();
+  				if (lemma == null) {
+  					lemma = td.dep().value();
+  				}
+  				String entry = "Object_" + td.gov().value() +"=" + td.dep().value() + "," + lemma + "," + posTag;
+  				IIndexWord idxWord = dict.getIndexWord(td.dep().value(), POS.NOUN);
+  				if (idxWord != null){
+  					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      					IWordID wordID = idxWord.getWordIDs().get(i);
+      					IWord iword = dict.getWord(wordID);
+      					entry = entry + "," + iword.getSenseKey().toString();
+    				}
+    			}
+    			returnValue.add(entry);
+  			} else if(relation.contains("subj")) {
+  				String posTag = null;
+  				for (TaggedWord t : tSentence) {
+  					if (t.value().equals(td.dep().value())){
+  						posTag = t.tag();
+  						break;
+  					}
+  				}
+  				String lemma = td.dep().lemma();
+  				if (lemma == null) {
+  					lemma = td.dep().value();
+  				}
+  				String entry = "Subject_" + td.gov().value() +"=" + td.dep().value() + "," + lemma + "," + posTag;
+  				IIndexWord idxWord = dict.getIndexWord(td.dep().value(), POS.NOUN);
+  				if (idxWord != null){
+  					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      					IWordID wordID = idxWord.getWordIDs().get(i);
+      					IWord iword = dict.getWord(wordID);
+      					entry = entry + "," + iword.getSenseKey().toString();
+    				}
+    			}
+    			returnValue.add(entry);
+  			}
+  		}
+	}
+  	return returnValue;
   }
 
   /**
