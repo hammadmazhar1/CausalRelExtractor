@@ -29,9 +29,9 @@ import java.util.Collection;
  */
 public class DependencyParserDemo {
   public static void main(String[] args) {
-    String modelPath = DependencyParser.DEFAULT_MODEL;
+    String modelPath = "models\\english_UD.gz";
     String taggerPath = "english-left3words-distsim.tagger";
-    String parserModel = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
+    String parserModel = "models\\englishPCFG.ser.gz";
     
     // for (int argIndex = 0; argIndex < args.length; ) {
     //   switch (args[argIndex]) {
