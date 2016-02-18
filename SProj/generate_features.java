@@ -351,7 +351,10 @@ public class generate_features {
     
     WordnetStemmer stemmer = new WordnetStemmer(dict);
     List<String> strings = stemmer.findStems(wp.word_one,POS.VERB);
-    String lemma = strings.get(0);
+    String lemma = null;
+    if (strings.isEmpty())
+    	lemma = wp.word_one;
+    else lemma = strings.get(0);
 
     IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
 
@@ -364,32 +367,39 @@ public class generate_features {
         break;
       }
     }
-    for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      IWordID wordID = idxWord.getWordIDs().get(i);
-      IWord word = dict.getWord(wordID);
-      returnValue.add(word.getSenseKey().toString());
-    }
+    if (idxWord != null) {
+    	for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      		IWordID wordID = idxWord.getWordIDs().get(i);
+      		IWord word = dict.getWord(wordID);
+      		returnValue.add(word.getSenseKey().toString());
+    	}
+	}
     // look at stems for word 2
     
     strings = stemmer.findStems(wp.word_two,POS.VERB);
-    lemma = strings.get(0);
+    if (strings.isEmpty()) 
+    	lemma = wp.word_two;
+    else lemma = strings.get(0);
 
     idxWord = dict.getIndexWord(lemma, POS.VERB);
 
     //add word two, its lemma, POS tag and sense keys
     returnValue.add(wp.word_two);
     returnValue.add(lemma);
+
     for (int i = 0; i < tSentence.size(); i++) {
       if (tSentence.get(i).value().equals(wp.word_two)) {
         returnValue.add(tSentence.get(i).tag());
         break;
       }
     }
-    for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      IWordID wordID = idxWord.getWordIDs().get(i);
-      IWord word = dict.getWord(wordID);
-      returnValue.add(word.getSenseKey().toString());
-    }
+    if (idxWord != null) {
+    	for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+		    IWordID wordID = idxWord.getWordIDs().get(i);
+      		IWord word = dict.getWord(wordID);
+    		returnValue.add(word.getSenseKey().toString());
+	   	}
+	}
   	return returnValue;
   }
 
@@ -445,25 +455,33 @@ public class generate_features {
         	if (temp.value().equals(wp.word_one) || temp.value().equals(wp.word_two)) {
           		List<TaggedWord> phraseSent = GetWords(subTree);
           		for (TaggedWord word : phraseSent) {
-            		//if word is a noun
-            		if (word.tag().contains("V")) {
+            		//if word is a verb
+            		if (word.tag().contains("VB")) {
             			//find word stem
             			List<String> strings = stemmer.findStems(word.value(),POS.VERB);
-            			String lemma = strings.get(0);
+            			String lemma = null
+            			if (strings.isEmpty())
+            				lemma = word.value()
+            			else lemma = strings.get(0);
             			IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
 						//add word, its lemma, POS tag and sense keys
             			returnValue.add(word.value());
 			            returnValue.add(lemma);
            				returnValue.add(word.tag());
-     					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      						IWordID wordID = idxWord.getWordIDs().get(i);
-      						IWord iword = dict.getWord(wordID);
-      						returnValue.add(iword.getSenseKey().toString());
+           				if (idxWord != null) {
+     						for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      							IWordID wordID = idxWord.getWordIDs().get(i);
+    	  						IWord iword = dict.getWord(wordID);
+	      						returnValue.add(iword.getSenseKey().toString());
+    						}
     					}
     				// word is a noun
-          			} else if(word.tag().contains("N")) {
+          			} else if(word.tag().contains("NN")) {
           				List<String> strings = stemmer.findStems(word.value(),POS.NOUN);
-            			String lemma = strings.get(0);
+          				String lemma = null;
+          				if (strings.isEmpty())
+          					lemma = word.value()
+            			else lemma = strings.get(0);
 
 			            IIndexWord idxWord = dict.getIndexWord(lemma, POS.NOUN);
 
@@ -471,14 +489,19 @@ public class generate_features {
             			returnValue.add(word.value());
             			returnValue.add(lemma);
             			returnValue.add(word.tag());
-     		     		for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      						IWordID wordID = idxWord.getWordIDs().get(i);
-      						IWord iword = dict.getWord(wordID);
-      						returnValue.add(iword.getSenseKey().toString());
+            			if (idxWord != null){
+     		     			for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+      							IWordID wordID = idxWord.getWordIDs().get(i);
+      							IWord iword = dict.getWord(wordID);
+      							returnValue.add(iword.getSenseKey().toString());
+    						}
     					}
 			        } else {
           				List<String> strings = stemmer.findStems(word.value(),null);
-            			String lemma = strings.get(0);
+          				String lemma = null;
+          				if (strings.isEmpty()) 
+          					lemma = word.value();
+            			else lemma = strings.get(0);
             			//add word, its lemma and POS tag
             			returnValue.add(word.value());
             			returnValue.add(lemma);
@@ -570,7 +593,39 @@ public class generate_features {
    * ev_i = [subject_vi] vi [object_vj] and ev_j = [subject_vj] vj [object_vj].
    */
   static List<String> feature_verbsAndArgumentPairs(Word_Pair wp, List<TaggedWord> tSentence) {
-  	return null;
+  	List<String> verb_Args = feature_verbArguments(wp.tSentence);
+  	ArrayList<String> ev_i = new ArrayList<String>();
+  	ArrayList<String> ev_j = new ArrayList<String>();
+  	List<String> returnValue = new ArrayList<>();
+  	for (String arg :verb_Args) {
+  		if (arg.contains("Subject")) {
+  			if (arg.contains(wp.word_one)) {
+  				String[] subject = arg.split("=",2);
+  				String[] subjDetails = subject[1].split(",",2);
+  				ev_i.add(subjDetails[0]);
+  				ev_i.add(wp.word_one);
+  			}
+  			if (arg.contains(wp.word_two)) {
+  				String[] subject = arg.split("=",2);
+  				String[] subjDetails = subject[1].split(",",2);
+  				ev_j.add(subjDetails[0]);
+  				ev_j.add(wp.word_two);
+  			}
+  		} else if (arg.contains("Object")) {
+  			if (arg.contains(wp.word_two)) {
+  				String[] object = arg.split("=",2);
+  				String[] objDetails = object[1].split(",",2);
+  				ev_i.add(objDetails[0]);
+  				ev_j.add(objDetails[0]);
+  			}
+  		}
+  	}
+  	for (String i : ev_i){
+  		for (String j: ev_j) {
+  			returnValue.add(i+"-"+j);
+  		}
+  	}
+  	return returnValue;
   }
 
   /**
