@@ -31,162 +31,6 @@ import edu.stanford.nlp.trees.*;
 import edu.mit.jwi.*;
 import edu.mit.jwi.item.*;
 import edu.mit.jwi.morph.*;
-//=================================================================================
-//=================================================================================
-
-class Pair {
-  public int x;
-  public int y;
-
-  public Pair(int _x, int _y) {
-    x = _x;
-    y = _y;
-  }
-}
-
-class Word_Count implements Comparable<Word_Count> {
-  public int    actualCount;
-  public int    documentCount;
-  public String word;
-
-  public Word_Count(String w1) {
-    word          = w1.toLowerCase();
-    actualCount   = 1;
-    documentCount = 1;
-  }
-
-  public Word_Count(String w1, int _document, int _actual) {
-    word = w1.toLowerCase();
-    actualCount = _actual;
-    documentCount = _document;
-  }
-
-  public String print() {
-    return Integer.toString(documentCount) + "            " + Integer.toString(actualCount) + "          " + word;
-  }
-
-  public boolean equals(Word_Count wc) {
-    return word.equals(wc.word);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o instanceof Word_Count) {
-      Word_Count wc = (Word_Count) o;
-      return word.equals(wc.word);
-    }
-    return false;
-  }
-
-  public void documentIncrement() {
-    documentCount++;
-  }
-
-  public void documentIncrement(int inc) {
-    documentCount += inc;
-  }
-
-  public void actualIncrement() {
-    actualCount++;
-  }
-
-  public void actualIncrement(int inc) {
-    actualCount += inc;
-  }
-
-  @Override
-  public int compareTo(Word_Count another) {
-    if (this.word.compareTo(another.word) < 0) {
-        return -1;
-    } else {
-        return 1;
-    }
-  }
-}
-
-
-class Word_Pair implements Comparable<Word_Pair> {
-  public int    actualCount;
-  public int    documentCount;
-  public String word_one;
-  public String word_two;
-
-  public Word_Pair(String w1, String w2) {
-    w1 = w1.toLowerCase();
-    w2 = w2.toLowerCase();
-    if (w1.compareTo(w2) < 0) {
-      word_one = w1;
-      word_two = w2;
-    } else {
-      word_one = w2;
-      word_two = w1;
-    }
-
-    actualCount = 1;
-    documentCount = 1;
-  }
-
-  public Word_Pair(String w1, String w2, int _document, int _actual) {
-    w1 = w1.toLowerCase();
-    w2 = w2.toLowerCase();
-    if (w1.compareTo(w2) < 0) {
-      word_one = w1;
-      word_two = w2;
-    } else {
-      word_one = w2;
-      word_two = w1;
-    }
-
-    actualCount = _actual;
-    documentCount = _document;
-  }
-
-  public String toString() {
-    return word_one + " - " + word_two;
-  }
-
-  public String print() {
-    return Integer.toString(documentCount) + "\t" + Integer.toString(actualCount) + "\t" + toString();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o instanceof Word_Pair) {
-      Word_Pair wp = (Word_Pair) o;
-      return word_one.equals(wp.word_one) && word_two.equals(wp.word_two);
-    }
-    return false;
-  }
-
-  public boolean equals(Word_Pair wp) {
-    return word_one.equals(wp.word_one) && word_two.equals(wp.word_two);
-  }
-
-  public void documentIncrement() {
-    documentCount++;
-  }
-
-  public void documentIncrement(int inc) {
-    documentCount += inc;
-  }
-
-  public void actualIncrement() {
-    actualCount++;
-  }
-
-  public void actualIncrement(int inc) {
-    actualCount += inc;
-  }
-
-  @Override
-  public int compareTo(Word_Pair another) {
-    if (this.toString().compareTo(another.toString()) < 0) {
-        return -1;
-    } else {
-        return 1;
-    }
-  }
-}
 
 //=================================================================================
 //=================================================================================
@@ -333,9 +177,8 @@ public class generate_features {
    */
   static List<String> feature_verbs(Word_Pair wp, List<TaggedWord> tSentence) {
     List<String> returnValue = new ArrayList<>();
-     // construct the URL to the Wordnet dictionary directory
     
-
+    // construct the URL to the Wordnet dictionary directory
     String wnhome = System.getenv("WNHOME");
     String path = wnhome + File.separator + "dict";
     URL url = null;
@@ -347,8 +190,8 @@ public class generate_features {
     IDictionary dict = new Dictionary(url);
     try {dict.open();}
     catch(IOException e){e.printStackTrace();}
-    //look at stems for word one
     
+    // look at stems for word one
     WordnetStemmer stemmer = new WordnetStemmer(dict);
     List<String> strings = stemmer.findStems(wp.word_one,POS.VERB);
     String lemma = null;
@@ -358,7 +201,7 @@ public class generate_features {
 
     IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
 
-    //add word one, its lemma, POS tag and sense keys
+    // add word one, its lemma, POS tag and sense keys
     returnValue.add(wp.word_one);
     returnValue.add(lemma);
     for (int i = 0; i < tSentence.size(); i++) {
@@ -373,9 +216,9 @@ public class generate_features {
       		IWord word = dict.getWord(wordID);
       		returnValue.add(word.getSenseKey().toString());
     	}
-	}
-    // look at stems for word 2
+    }
     
+    // look at stems for word 2
     strings = stemmer.findStems(wp.word_two,POS.VERB);
     if (strings.isEmpty()) 
     	lemma = wp.word_two;
@@ -399,10 +242,15 @@ public class generate_features {
       		IWord word = dict.getWord(wordID);
     		returnValue.add(word.getSenseKey().toString());
 	   	}
-	}
+    }
   	return returnValue;
   }
 
+  /**
+   * [GetWords description]
+   * @param  parse [description]
+   * @return       [description]
+   */
   public static List<TaggedWord> GetWords(Tree parse) {
   	MaxentTagger tagger;
   	String taggerPath = "models\\english-left3words-distsim.tagger";
@@ -421,13 +269,14 @@ public class generate_features {
     }
     return null;
   }
+
   /**
    * words, lemmas, part-of-speech tags and all senses of the words of both verb phrases. We take 
    * senses from Word for only verbs and nouns. In order to collect the verb phrases, we use Stanford's 
    * syntactic parser
    */
   static List<String> feature_verbPhrases(Word_Pair wp, List<TaggedWord> tSentence) {
-    //form wordnet url
+    // form wordnet url
     String wnhome = System.getenv("WNHOME");
     String path = wnhome + File.separator + "dict";
     URL url = null;
@@ -446,70 +295,69 @@ public class generate_features {
     LexicalizedParser lp = LexicalizedParser.loadModel(parserModel);
     List<HasWord> sentence = Sentence.toWordList((Sentence.listToString(tSentence,false)));
     
-    
-
     Tree parse = lp.apply(sentence);
-	for (Tree subTree : parse) {
-    	if (subTree.label().value().equals("VP")){
+    for (Tree subTree : parse) {
+    	if (subTree.label().value().equals("VP")) {
     		Tree temp = subTree.getChild(0).getChild(0);
-        	if (temp.value().equals(wp.word_one) || temp.value().equals(wp.word_two)) {
-          		List<TaggedWord> phraseSent = GetWords(subTree);
-          		for (TaggedWord word : phraseSent) {
-            		//if word is a verb
-            		if (word.tag().contains("VB")) {
-            			//find word stem
-            			List<String> strings = stemmer.findStems(word.value(),POS.VERB);
-            			String lemma = null
-            			if (strings.isEmpty())
-            				lemma = word.value()
-            			else lemma = strings.get(0);
-            			IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
-						//add word, its lemma, POS tag and sense keys
-            			returnValue.add(word.value());
-			            returnValue.add(lemma);
-           				returnValue.add(word.tag());
-           				if (idxWord != null) {
+        if (temp.value().equals(wp.word_one) || temp.value().equals(wp.word_two)) {
+        	List<TaggedWord> phraseSent = GetWords(subTree);
+        	for (TaggedWord word : phraseSent) {
+        		// if word is a verb
+        		if (word.tag().contains("VB")) {
+        			// find word stem
+        			List<String> strings = stemmer.findStems(word.value(),POS.VERB);
+        			String lemma = null;
+        			if (strings.isEmpty())
+        				lemma = word.value();
+        			else lemma = strings.get(0);
+        			IIndexWord idxWord = dict.getIndexWord(lemma, POS.VERB);
+						  //add word, its lemma, POS tag and sense keys
+        			returnValue.add(word.value());
+	            returnValue.add(lemma);
+       				returnValue.add(word.tag());
+       				if (idxWord != null) {
      						for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
       							IWordID wordID = idxWord.getWordIDs().get(i);
     	  						IWord iword = dict.getWord(wordID);
 	      						returnValue.add(iword.getSenseKey().toString());
     						}
     					}
+
     				// word is a noun
-          			} else if(word.tag().contains("NN")) {
-          				List<String> strings = stemmer.findStems(word.value(),POS.NOUN);
-          				String lemma = null;
-          				if (strings.isEmpty())
-          					lemma = word.value()
-            			else lemma = strings.get(0);
+      			} else if(word.tag().contains("NN")) {
+      				List<String> strings = stemmer.findStems(word.value(),POS.NOUN);
+      				String lemma = null;
+      				if (strings.isEmpty())
+      					lemma = word.value();
+        			else lemma = strings.get(0);
 
-			            IIndexWord idxWord = dict.getIndexWord(lemma, POS.NOUN);
+	            IIndexWord idxWord = dict.getIndexWord(lemma, POS.NOUN);
 
-            			//add word, its lemma, POS tag and sense keys
-            			returnValue.add(word.value());
-            			returnValue.add(lemma);
-            			returnValue.add(word.tag());
-            			if (idxWord != null){
-     		     			for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      							IWordID wordID = idxWord.getWordIDs().get(i);
-      							IWord iword = dict.getWord(wordID);
-      							returnValue.add(iword.getSenseKey().toString());
+        			// add word, its lemma, POS tag and sense keys
+        			returnValue.add(word.value());
+        			returnValue.add(lemma);
+        			returnValue.add(word.tag());
+        			if (idxWord != null) {
+   		     			for (int i = 0; i <  idxWord.getWordIDs().size(); i++) {
+    							IWordID wordID = idxWord.getWordIDs().get(i);
+    							IWord iword = dict.getWord(wordID);
+    							returnValue.add(iword.getSenseKey().toString());
     						}
     					}
-			        } else {
-          				List<String> strings = stemmer.findStems(word.value(),null);
-          				String lemma = null;
-          				if (strings.isEmpty()) 
-          					lemma = word.value();
-            			else lemma = strings.get(0);
-            			//add word, its lemma and POS tag
-            			returnValue.add(word.value());
-            			returnValue.add(lemma);
-            			returnValue.add(word.tag());
-          			}
-        		}
-        	}
-      	}
+  	        } else {
+      				List<String> strings = stemmer.findStems(word.value(),null);
+      				String lemma = null;
+      				if (strings.isEmpty()) 
+      					lemma = word.value();
+        			else lemma = strings.get(0);
+        			//add word, its lemma and POS tag
+        			returnValue.add(word.value());
+        			returnValue.add(lemma);
+        			returnValue.add(word.tag());
+      			}
+          }
+        }
+      }
     }
     return returnValue;
   }
@@ -532,7 +380,6 @@ public class generate_features {
     IDictionary dict = new Dictionary(url);
     try {dict.open();}
     catch(IOException e){e.printStackTrace();}
-    
 
   	List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
   	for (TypedDependency td : tdl) {
@@ -584,7 +431,7 @@ public class generate_features {
     			returnValue.add(entry);
   			}
   		}
-	}
+    }
   	return returnValue;
   }
 
@@ -593,7 +440,9 @@ public class generate_features {
    * ev_i = [subject_vi] vi [object_vj] and ev_j = [subject_vj] vj [object_vj].
    */
   static List<String> feature_verbsAndArgumentPairs(Word_Pair wp, List<TaggedWord> tSentence) {
-  	List<String> verb_Args = feature_verbArguments(wp.tSentence);
+  	// List<String> verb_Args = feature_verbArguments(wp.tSentence);
+                                  List<String> verb_Args = new ArrayList<String>(); 
+    // Delete above line
   	ArrayList<String> ev_i = new ArrayList<String>();
   	ArrayList<String> ev_j = new ArrayList<String>();
   	List<String> returnValue = new ArrayList<>();

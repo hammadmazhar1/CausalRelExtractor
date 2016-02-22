@@ -1,0 +1,107 @@
+am - opposed
+1
+i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+
+am - being
+1
+i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+
+am - conducted
+1
+i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+
+being - opposed
+1
+i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+
+conducted - opposed
+1
+i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+
+being - conducted
+1
+i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+
+become - is
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+do - is
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+is - know
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+is - say
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+become - do
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+become - know
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+become - say
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+do - know
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+do - say
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+know - say
+1
+lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+
+are - is
+2
+there/ex is/vbz a/dt wide/jj variety/nn of/in food/nn options/nns ,/, consequently/rb ,/, people/nns in/in lums/nns are/vbp happy/jj and/cc content/nn ./.
+there/ex is/vbz a/dt wide/jj variety/nn of/in food/nn options/nns ,/, consequently/rb ,/, people/nns in/in lums/nns are/vbp happy/jj and/cc content/nn ./.
+
+are - overeating
+2
+however/rb ,/, due/jj to/to the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+as/in a/dt result/nn of/in the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+
+are - overspending
+2
+however/rb ,/, due/jj to/to the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+as/in a/dt result/nn of/in the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+
+overeating - overspending
+2
+however/rb ,/, due/jj to/to the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+as/in a/dt result/nn of/in the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+
+am - said
+1
+he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+
+be - said
+1
+he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+
+is - said
+1
+he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+
+am - be
+1
+he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+
+am - is
+1
+he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+
+be - is
+1
+he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj

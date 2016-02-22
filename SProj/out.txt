@@ -1,30 +1,24 @@
-
-
-The monster storm Katrina raged ashore along the Gulf Coast Monday morning .
-raged / VBD
-ashore / RB
-along / IN
-the / DT
-Gulf / NNP
-Coast / NNP
-Monday / NNP
-morning / NN
-(VP (VBD raged)
-  (ADVP (RB ashore))
-  (PP (IN along)
-    (NP (DT the) (NNP Gulf) (NNP Coast) (NNP Monday)))
-  (NP (NN morning)))
-
-
-
-There were early reports of buildings collapsing along the coast .
-collapsing / VBG
-along / IN
-the / DT
-coast / NN
-(VP (VBG collapsing)
-  (PP (IN along)
-    (NP (DT the) (NN coast))))
-
-
-
+a
+a/DT
+jh
+jh/NN
+b
+b/NN
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
+I/PRP am/VBP vehemently/RB opposed/VBN to/TO LUMS/NNS because/IN of/IN the/DT incredible/JJ mismanagement/NN being/VBG conducted/VBN by/IN the/DT RO/NN ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
+LUMS/NNS is/VBZ a/DT den/NN of/IN disgusting/JJ ,/, spoilt/JJ brats/NNS who/WP become/VBP so/RB because/IN of/IN indulgent/JJ parents/NNS who/WP do/VBP not/RB know/VB how/WRB to/TO say/VB no/DT ./.
+there is a wide variety of food options , consequently , people in lums are happy and content .
+There/EX is/VBZ a/DT wide/JJ variety/NN of/IN food/NN options/NNS ,/, consequently/RB ,/, people/NNS in/IN LUMS/NNS are/VBP happy/JJ and/CC content/NN ./.
+however , due to the good food , people are prone to overeating and overspending .
+However/RB ,/, due/JJ to/TO the/DT good/JJ food/NN ,/, people/NNS are/VBP prone/JJ to/TO overeating/VBG and/CC overspending/VBG ./.
+he said because of a , i am b , but to be fair , there is also c.
+he/PRP said/VBD because/IN of/IN A/DT ,/, I/PRP am/VBP B/NN ,/, but/CC to/TO be/VB fair/JJ ,/, there/EX is/VBZ also/RB C./JJ
+i like lums because why not .
+I/PRP like/VBP LUMS/NNS because/IN why/WRB not/RB ./.
+lums is awesome because of the poondi bench .
+LUMS/NNS is/VBZ awesome/JJ because/IN of/IN the/DT poondi/NN bench/NN ./.
+there is a wide variety of food options , consequently , people in lums are happy and content .
+There/EX is/VBZ a/DT wide/JJ variety/NN of/IN food/NN options/NNS ,/, consequently/RB ,/, people/NNS in/IN LUMS/NNS are/VBP happy/JJ and/CC content/NN ./.
+as a result of the good food , people are prone to overeating and overspending .
+As/IN a/DT result/NN of/IN the/DT good/JJ food/NN ,/, people/NNS are/VBP prone/JJ to/TO overeating/VBG and/CC overspending/VBG ./.
