@@ -35,6 +35,7 @@ public class analyze_files {
   static List<String>     phrases_all       = Arrays.asList("because", "for this reason", "for that reason", "consequently", "as a consequence of", "as a result of", "but", "in short", "in other words", "whereas", "on the other hand", "nevertheless", "nonetheless", "in spite of", "in contrast", "however", "even", "though", "despite the fact", "conversely", "although");
   static List<Integer>    length_phrases_all= Arrays.asList(1, 3, 3, 1, 4, 4, 1, 2, 3, 1, 4, 1, 1, 3, 2, 1, 1, 1, 3, 1, 1);
   static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
+  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/test";
   static String           modelFile         = "models\\english-left3words-distsim.tagger";
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
@@ -371,7 +372,11 @@ public class analyze_files {
     }
     
     // Open the file which has to be analyzed.
-    File[] files = new File(dirName).listFiles();
+    File[] files = null;
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) 
+      files = new File(dirName).listFiles();
+    else
+      files = new File(uDirName).listFiles();
     iterateFiles(files);
 
     // The main class for users to run, train, and test the part of speech tagger.

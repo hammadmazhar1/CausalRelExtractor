@@ -31,6 +31,7 @@ public class create_verb_verb_pairs_with_sentences {
   static List<File>       all_files         = new ArrayList<>();
   static List<Word_Pair>  all_verb_pairs    = new ArrayList<>();
   static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
+  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/test";
   static String           modelFile         = "models\\english-left3words-distsim.tagger";
   static PrintWriter      pw                = null;
 
@@ -104,8 +105,11 @@ public class create_verb_verb_pairs_with_sentences {
     pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
     
     // Get list of all files which have to be parsed in order to construct the (non-)Causal verb-pairs.
-    File[] files = new File(dirName).listFiles();
-    iterateFiles(files);
+    File[] files = null;
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) 
+      files = new File(dirName).listFiles();
+    else
+      files = new File(uDirName).listFiles();    iterateFiles(files);
 
     // The main class for users to run, train, and test the part of speech tagger.
     // http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html

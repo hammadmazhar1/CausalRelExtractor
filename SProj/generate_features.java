@@ -42,6 +42,7 @@ public class generate_features {
   static List<String>     phrases_all       = Arrays.asList("because", "for this reason", "for that reason", "consequently", "as a consequence of", "as a result of", "but", "in short", "in other words", "whereas", "on the other hand", "nevertheless", "nonetheless", "in spite of", "in contrast", "however", "even", "though", "despite the fact", "conversely", "although");
   static List<Integer>    length_phrases_all= Arrays.asList(1, 3, 3, 1, 4, 4, 1, 2, 3, 1, 4, 1, 1, 3, 2, 1, 1, 1, 3, 1, 1);
   static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
+  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/test";
   static String           modelFile         = "models\\english-left3words-distsim.tagger";
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
@@ -528,9 +529,27 @@ public class generate_features {
   			returnValue.add(tw);
   		}
   	}
+  	String wnhome = System.getenv("WNHOME");
+    String path = wnhome + File.separator + "dict";
+    URL url = null;
+    try{ url = new URL("file", null, path); } 
+    catch(MalformedURLException e){ e.printStackTrace(); }
+    if(url == null) return null;
+    
+    // construct the dictionary object and open it
+    IDictionary dict = new Dictionary(url);
+    try {dict.open();}
+    catch(IOException e){e.printStackTrace();}
+    WordnetStemmer stemmer = new WordnetStemmer(dict);
 
   	// Look up lemmas of these verbs and add them to the list.
-
+    for (TaggedWord i : returnValue){
+    	List<String> lemList =stemmer.findStems(i.value(),POS.VERB);
+    	if (lemList.isEmpty())
+    		returnValue.add(i);
+    	else
+    		returnValue.add(new TaggedWord(lemList.get(0),i.tag()));
+    }
   	return returnValue;
   }
 
@@ -602,7 +621,11 @@ public class generate_features {
     }
     
     // Open the file which has to be analyzed.
-    File[] files = new File(dirName).listFiles();
+    File[] files = null;
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) 
+      files = new File(dirName).listFiles();
+    else
+      files = new File(uDirName).listFiles();
     iterateFiles(files);
 
     // The main class for users to run, train, and test the part of speech tagger.
