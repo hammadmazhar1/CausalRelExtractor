@@ -73,10 +73,10 @@ public class create_verb_verb_pairs_with_sentences {
           Word_Pair search = find_WP(wp);
 
           if (search != null) {
-            search.sentences.add(Sentence.listToString(tSentence, false).toLowerCase());
+            search.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
           } else {
             all_verb_pairs.add(wp);
-            wp.sentences.add(Sentence.listToString(tSentence, false).toLowerCase());
+            wp.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
           }
         }
       }

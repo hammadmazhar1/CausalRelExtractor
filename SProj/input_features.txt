@@ -1,107 +1,107 @@
 am - opposed
 1
-i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
 
 am - being
 1
-i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
 
 am - conducted
 1
-i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
 
 being - opposed
 1
-i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
 
 conducted - opposed
 1
-i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
 
 being - conducted
 1
-i/prp am/vbp vehemently/rb opposed/vbn to/to lums/nns because/in of/in the/dt incredible/jj mismanagement/nn being/vbg conducted/vbn by/in the/dt ro/nn ./.
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
 
 become - is
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 do - is
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 is - know
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 is - say
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 become - do
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 become - know
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 become - say
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 do - know
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 do - say
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 know - say
 1
-lums/nns is/vbz a/dt den/nn of/in disgusting/jj ,/, spoilt/jj brats/nns who/wp become/vbp so/rb because/in of/in indulgent/jj parents/nns who/wp do/vbp not/rb know/vb how/wrb to/to say/vb no/dt ./.
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
 
 are - is
 2
-there/ex is/vbz a/dt wide/jj variety/nn of/in food/nn options/nns ,/, consequently/rb ,/, people/nns in/in lums/nns are/vbp happy/jj and/cc content/nn ./.
-there/ex is/vbz a/dt wide/jj variety/nn of/in food/nn options/nns ,/, consequently/rb ,/, people/nns in/in lums/nns are/vbp happy/jj and/cc content/nn ./.
+there is a wide variety of food options , consequently , people in lums are happy and content .
+there is a wide variety of food options , consequently , people in lums are happy and content .
 
 are - overeating
 2
-however/rb ,/, due/jj to/to the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
-as/in a/dt result/nn of/in the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+however , due to the good food , people are prone to overeating and overspending .
+as a result of the good food , people are prone to overeating and overspending .
 
 are - overspending
 2
-however/rb ,/, due/jj to/to the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
-as/in a/dt result/nn of/in the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+however , due to the good food , people are prone to overeating and overspending .
+as a result of the good food , people are prone to overeating and overspending .
 
 overeating - overspending
 2
-however/rb ,/, due/jj to/to the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
-as/in a/dt result/nn of/in the/dt good/jj food/nn ,/, people/nns are/vbp prone/jj to/to overeating/vbg and/cc overspending/vbg ./.
+however , due to the good food , people are prone to overeating and overspending .
+as a result of the good food , people are prone to overeating and overspending .
 
 am - said
 1
-he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+he said because of a , i am b , but to be fair , there is also c.
 
 be - said
 1
-he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+he said because of a , i am b , but to be fair , there is also c.
 
 is - said
 1
-he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+he said because of a , i am b , but to be fair , there is also c.
 
 am - be
 1
-he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+he said because of a , i am b , but to be fair , there is also c.
 
 am - is
 1
-he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+he said because of a , i am b , but to be fair , there is also c.
 
 be - is
 1
-he/prp said/vbd because/in of/in a/dt ,/, i/prp am/vbp b/nn ,/, but/cc to/to be/vb fair/jj ,/, there/ex is/vbz also/rb c./jj
+he said because of a , i am b , but to be fair , there is also c.
