@@ -608,11 +608,22 @@ public class generate_features {
 
 	public static void main(String[] args) throws Exception {
 		pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
-		if (args.length != 2) {
-			System.out.println("Usage: java -cp \".:lib/*\" generate_features <inputfilename> <outputfilename>");
+		if (args.length < 2) {
+			System.out.println("Usage: java -cp \".:lib/*\" generate_features [-l] <inputfilename> <outputfilename> ");
 			return;
 		}
-		 pw = new PrintWriter(new File(args[1]));
+		boolean labelled = false;
+		String inputFile = null;
+		String outputFile = null;
+		if (args[0].equals("-l")) {
+			labelled = true;
+			inputFile = args[1];
+			outputFile = args[2];
+		} else {
+			inputFile = args[0];
+			outputFile = args[1];
+		}
+		pw = new PrintWriter(new File(outputFile));
     	// The main class for users to run, train, and test the part of speech tagger.
     	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
     	//MaxentTagger tagger = new MaxentTagger(modelFile);
@@ -632,6 +643,10 @@ public class generate_features {
         			int sentences = Integer.parseInt(scanner.nextLine());
         			//System.out.println(sentences);
         			for (int i = 0; i < sentences; i++) {
+        				String label = null;
+        				if (labelled) {
+        					label = scanner.nextLine();
+        				}
         				String s = scanner.nextLine();
         				//System.out.println(s);
         				List<HasWord> sent = Sentence.toWordList(s);
@@ -652,6 +667,9 @@ public class generate_features {
         					pw.print(verbs.get(j)+",");
         				}
         				pw.print(" ");
+        				if (labelled) {
+        					pw.print(label + " ");
+        				}
         				if (verbPhrases.size() == 0)
         					pw.print("null");
         				else {
