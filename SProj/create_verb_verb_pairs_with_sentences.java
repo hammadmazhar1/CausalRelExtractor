@@ -109,7 +109,8 @@ public class create_verb_verb_pairs_with_sentences {
     if (System.getProperty("os.name").toLowerCase().contains("windows")) 
       files = new File(dirName).listFiles();
     else
-      files = new File(uDirName).listFiles();    iterateFiles(files);
+      files = new File(uDirName).listFiles();
+    iterateFiles(files);
 
     // The main class for users to run, train, and test the part of speech tagger.
     // http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
@@ -167,9 +168,9 @@ public class create_verb_verb_pairs_with_sentences {
 
     for (int i = 0; i < all_verb_pairs.size(); i++) {
       pw.print(all_verb_pairs.get(i).printWithSentences());
-      if (i != all_verb_pairs.size()-1) {
+      /*if (i != all_verb_pairs.size()-1) {
         pw.print("\n");
-      }
+      }*/
     }
     pw.close();
   }

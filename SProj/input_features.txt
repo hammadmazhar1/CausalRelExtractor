@@ -1,107 +1,82 @@
 am - opposed
 1
 i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
-
 am - being
 1
 i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
-
 am - conducted
 1
 i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
-
 being - opposed
 1
 i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
-
 conducted - opposed
 1
 i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
-
 being - conducted
 1
 i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
-
 become - is
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 do - is
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 is - know
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 is - say
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 become - do
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 become - know
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 become - say
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 do - know
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 do - say
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 know - say
 1
 lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
-
 are - is
 2
 there is a wide variety of food options , consequently , people in lums are happy and content .
 there is a wide variety of food options , consequently , people in lums are happy and content .
-
 are - overeating
 2
 however , due to the good food , people are prone to overeating and overspending .
 as a result of the good food , people are prone to overeating and overspending .
-
 are - overspending
 2
 however , due to the good food , people are prone to overeating and overspending .
 as a result of the good food , people are prone to overeating and overspending .
-
 overeating - overspending
 2
 however , due to the good food , people are prone to overeating and overspending .
 as a result of the good food , people are prone to overeating and overspending .
-
 am - said
 1
 he said because of a , i am b , but to be fair , there is also c.
-
 be - said
 1
 he said because of a , i am b , but to be fair , there is also c.
-
 is - said
 1
 he said because of a , i am b , but to be fair , there is also c.
-
 am - be
 1
 he said because of a , i am b , but to be fair , there is also c.
-
 am - is
 1
 he said because of a , i am b , but to be fair , there is also c.
-
 be - is
 1
 he said because of a , i am b , but to be fair , there is also c.

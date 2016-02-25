@@ -47,6 +47,9 @@ public class generate_features {
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
   static int              totalSentences    = 0;
+  static DependencyParser parser 			= DependencyParser.loadFromModelFile("models\\english_UD.gz");
+  static LexicalizedParser lp 				= LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
+  static MaxentTagger     tagger            = new MaxentTagger("models\\english-left3words-distsim.tagger");;
 
   //=================================================================================
   //=================================================================================
@@ -253,9 +256,7 @@ public class generate_features {
    * @return       [description]
    */
   public static List<TaggedWord> GetWords(Tree parse) {
-  	MaxentTagger tagger;
-  	String taggerPath = "models\\english-left3words-distsim.tagger";
-  	tagger = new MaxentTagger(taggerPath);
+  	
     List<String> list = Arrays.asList("CC", "CD", "DT", "EX", "FW", "IN", "JJ", "JJR", "JJS", "LS", "MD", "NN", "NNS", "NNP", "NNPS", "PDT", "POS", "PRP", "RB", "RBR", "RBS", "RP", "SYM", "TO", "UH", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ", "WDT", "WP", "WRB", "WP$", "PRP$", "ADJP", "ADVP", "CONJP", "FRAG", "INTJ", "LST", "NAC", "NP", "NX", "PP", "PRN", "PRT", "QP", "RRC", "UCP", "VP", "WHADJP", "WHAVP", "WHNP", "WHPP", "X");
     String s = "";
     for (Tree subtree: parse) {
@@ -292,8 +293,7 @@ public class generate_features {
     WordnetStemmer stemmer = new WordnetStemmer(dict);
 
     List<String> returnValue = new ArrayList<>();
-    String parserModel = "models\\englishPCFG.ser.gz";
-    LexicalizedParser lp = LexicalizedParser.loadModel(parserModel);
+    
     List<HasWord> sentence = Sentence.toWordList((Sentence.listToString(tSentence,false)));
     
     Tree parse = lp.apply(sentence);
@@ -368,7 +368,6 @@ public class generate_features {
    */
   static List<String> feature_verbArguments(Word_Pair wp, List<TaggedWord> tSentence) {
   	List<String> returnValue = new ArrayList<String>();
-  	DependencyParser parser = DependencyParser.loadFromModelFile("models\\english_UD.gz");
   	GrammaticalStructure gs = parser.predict(tSentence);
   	String wnhome = System.getenv("WNHOME");
     String path = wnhome + File.separator + "dict";
@@ -381,12 +380,16 @@ public class generate_features {
     IDictionary dict = new Dictionary(url);
     try {dict.open();}
     catch(IOException e){e.printStackTrace();}
-
+    boolean subj_vi = false;
+    boolean subj_vj = false;
+    boolean obj_vi = false;
+    boolean obj_vj = false;
   	List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
   	for (TypedDependency td : tdl) {
   		if (td.gov().value().equals(wp.word_one) || td.gov().value().equals(wp.word_two)) {
   			String relation = td.reln().getShortName();
   			if (relation.contains("obj")){
+  				System.out.println(relation);
   				String posTag = null;
   				for (TaggedWord t : tSentence) {
   					if (t.value().equals(td.dep().value())){
@@ -407,8 +410,13 @@ public class generate_features {
       					entry = entry + "," + iword.getSenseKey().toString();
     				}
     			}
+    			if (entry.contains(wp.word_one))
+    				obj_vi = true;
+    			else
+    				obj_vj = true;
     			returnValue.add(entry);
   			} else if(relation.contains("subj")) {
+  				System.out.println(relation);
   				String posTag = null;
   				for (TaggedWord t : tSentence) {
   					if (t.value().equals(td.dep().value())){
@@ -429,10 +437,22 @@ public class generate_features {
       					entry = entry + "," + iword.getSenseKey().toString();
     				}
     			}
+    			if (entry.contains(wp.word_one))
+    				subj_vi = true;
+    			else
+    				subj_vj = true;
     			returnValue.add(entry);
   			}
   		}
     }
+    if (!subj_vi)
+    	returnValue.add("Subject_"+wp.word_one+"=null");
+    if (!subj_vj)
+    	returnValue.add("Subject_"+wp.word_two+"=null");
+    if (!obj_vi)
+    	returnValue.add("Object_"+wp.word_one+"=null");
+    if (!obj_vj)
+    	returnValue.add("Object_"+wp.word_two+"=null");
   	return returnValue;
   }
 
@@ -441,9 +461,8 @@ public class generate_features {
    * ev_i = [subject_vi] vi [object_vj] and ev_j = [subject_vj] vj [object_vj].
    */
   static List<String> feature_verbsAndArgumentPairs(Word_Pair wp, List<TaggedWord> tSentence) {
-  	// List<String> verb_Args = feature_verbArguments(wp.tSentence);
-                                  List<String> verb_Args = new ArrayList<String>(); 
-    // Delete above line
+  	List<String> verb_Args = feature_verbArguments(wp,tSentence);
+   
   	ArrayList<String> ev_i = new ArrayList<String>();
   	ArrayList<String> ev_j = new ArrayList<String>();
   	List<String> returnValue = new ArrayList<>();
@@ -452,21 +471,25 @@ public class generate_features {
   			if (arg.contains(wp.word_one)) {
   				String[] subject = arg.split("=",2);
   				String[] subjDetails = subject[1].split(",",2);
-  				ev_i.add(subjDetails[0]);
+  				if (!subjDetails[0].equals("null"))
+  					ev_i.add(subjDetails[0]);
   				ev_i.add(wp.word_one);
   			}
   			if (arg.contains(wp.word_two)) {
   				String[] subject = arg.split("=",2);
   				String[] subjDetails = subject[1].split(",",2);
-  				ev_j.add(subjDetails[0]);
+  				if (!subjDetails[0].equals("null"))
+  					ev_j.add(subjDetails[0]);
   				ev_j.add(wp.word_two);
   			}
   		} else if (arg.contains("Object")) {
   			if (arg.contains(wp.word_two)) {
   				String[] object = arg.split("=",2);
   				String[] objDetails = object[1].split(",",2);
-  				ev_i.add(objDetails[0]);
-  				ev_j.add(objDetails[0]);
+  				if (!objDetails[0].equals("null")) {
+  					ev_i.add(objDetails[0]);
+  					ev_j.add(objDetails[0]);
+  				}
   			}
   		}
   	}
@@ -523,12 +546,6 @@ public class generate_features {
    * all main verbs and their lemmas from the mincontext.
    */
   static List<TaggedWord> feature_contextMainVerbs(List<TaggedWord> minContext) {
-  	List<TaggedWord> returnValue = new ArrayList<>();
-  	for (TaggedWord tw : minContext) {
-  		if (tw.tag().startsWith("VB")) {
-  			returnValue.add(tw);
-  		}
-  	}
   	String wnhome = System.getenv("WNHOME");
     String path = wnhome + File.separator + "dict";
     URL url = null;
@@ -542,14 +559,18 @@ public class generate_features {
     catch(IOException e){e.printStackTrace();}
     WordnetStemmer stemmer = new WordnetStemmer(dict);
 
-  	// Look up lemmas of these verbs and add them to the list.
-    for (TaggedWord i : returnValue){
-    	List<String> lemList =stemmer.findStems(i.value(),POS.VERB);
-    	if (lemList.isEmpty())
-    		returnValue.add(i);
-    	else
-    		returnValue.add(new TaggedWord(lemList.get(0),i.tag()));
-    }
+  	List<TaggedWord> returnValue = new ArrayList<>();
+
+  	for (TaggedWord tw : minContext) {
+  		if (tw.tag().startsWith("VB")) {
+  			returnValue.add(tw);
+  			List<String> lemList =stemmer.findStems(tw.value(),POS.VERB);
+    		if (lemList.isEmpty())
+    			returnValue.add(tw);
+    		else
+    			returnValue.add(new TaggedWord(lemList.get(0),tw.tag()));
+  		}
+  	}
   	return returnValue;
   }
 
@@ -559,8 +580,8 @@ public class generate_features {
    */
   static List<Word_Pair> feature_contextMainVerbPairs(List<TaggedWord> contextMainVerbs) {
   	List<Word_Pair> returnValue = new ArrayList<>();
-  	for (int i = 0; i < contextMainVerbs.size(); i++) {
-  		for (int j = 0; j < contextMainVerbs.size(); j++) {
+  	for (int i = 1; i < contextMainVerbs.size(); i = i+2) {
+  		for (int j = 1; j < contextMainVerbs.size(); j = j+2) {
 	  		if (i != j) {
 	  			Word_Pair wp = new Word_Pair(contextMainVerbs.get(i).word(), contextMainVerbs.get(j).word());
 	  			returnValue.add(wp);
@@ -587,82 +608,133 @@ public class generate_features {
 
 	public static void main(String[] args) throws Exception {
 		pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
-		//set Wordnet directory
-		
+		if (args.length != 2) {
+			System.out.println("Usage: java -cp \".:lib/*\" generate_features <inputfilename> <outputfilename>");
+			return;
+		}
+		 pw = new PrintWriter(new File(args[1]));
+    	// The main class for users to run, train, and test the part of speech tagger.
+    	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
+    	//MaxentTagger tagger = new MaxentTagger(modelFile);
 
-    // Populate the Words and Verb-Verb pair data.
-    try {
-      Scanner scanner = new Scanner(new File("dictionary.txt"));
-      totalNumWords = scanner.nextInt();
-      totalSentences = scanner.nextInt();
-      while (scanner.hasNextLine()) {
-        int i1 = scanner.nextInt();
-        int i2 = scanner.nextInt();
-        String s = scanner.next();
-        Word_Count wc = new Word_Count(s, i1, i2);
-        doc_count_words.add(wc);
-      }
-      scanner.close();
+    	// A fast, rule-based tokenizer implementation, which produces Penn Treebank style tokenization of English text.
+    	// http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
+    	//TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
+    	// Open the file provided in command line args
+    	try {
+      		Scanner scanner = new Scanner(new File(args[0]));
+      		while (scanner.hasNextLine()) {
+      		  	String verb_pair = scanner.nextLine();
+      		  	//System.out.println(verb_pair);
+      		  	if (!verb_pair.equals("\n")){
+        			String[] verbs_pair = verb_pair.split(" ",3);
+        			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],0,0);
+        			int sentences = Integer.parseInt(scanner.nextLine());
+        			//System.out.println(sentences);
+        			for (int i = 0; i < sentences; i++) {
+        				String s = scanner.nextLine();
+        				//System.out.println(s);
+        				List<HasWord> sent = Sentence.toWordList(s);
+        				List<TaggedWord> tSentence = tagger.tagSentence(sent);
+        				//System.out.println(Sentence.listToString(tSentence,false));
+        				List<String> verbs = feature_verbs(wp,tSentence);
+        				List<String> verbPhrases = feature_verbPhrases(wp,tSentence);
+        				List<String> verbArguments = feature_verbArguments(wp,tSentence);
+        				List<String> verbsAndArgumentPairs = feature_verbsAndArgumentPairs(wp,tSentence);
+        				List<TaggedWord> contextWords = feature_contextWords(wp,tSentence);
+        				List<TaggedWord> contextMainVerbs = feature_contextMainVerbs(contextWords);
+        				List<Word_Pair> contextMainVerbPairs = feature_contextMainVerbPairs(contextMainVerbs);
 
-      scanner = new Scanner(new File("verb-verb.txt"));
-      while (scanner.hasNextLine()) {
-        int i1 = scanner.nextInt();
-        int i2 = scanner.nextInt();
-        String s1 = scanner.next();
-        String s2 = scanner.next();
-        s2 = scanner.next();
-        Word_Pair wp = new Word_Pair(s1, s2, i1, i2);
-        all_verb_pairs.add(wp);
-      }
-      scanner.close();      
-    } catch (Exception e) {
-      System.out.println("\nAN EXCEPTION OCCURRED:\n" + e.toString() + "\n");
-      System.exit(0);
+        				// print out features and instance pair
+        				int j = 0;
+        				pw.print(wp.word_one + "-" + wp.word_two+ "	");
+        				for (j = 0; j < verbs.size(); j++) {
+        					pw.print(verbs.get(j)+",");
+        				}
+        				pw.print(" ");
+        				if (verbPhrases.size() == 0)
+        					pw.print("null");
+        				else {
+	        				for (j = 0; j < verbPhrases.size(); j++) {
+        						pw.print(verbPhrases.get(j)+",");
+        					}
+        				}
+        				pw.print(" ");
+        				String subj_vi = null;
+        				String subj_vj = null;
+        				String obj_vi = null;
+        				String obj_vj = null;
+        				for (j = 0; j < verbArguments.size(); j++) {
+        					String arg = verbArguments.get(j);
+        					if (arg.contains("Subject")) {
+  								if (arg.contains(wp.word_one)) {
+  									String[] subject = arg.split("=",2);
+  									subj_vi = subject[1];
+  								}
+  								else if (arg.contains(wp.word_two)) {
+  									String[] subject = arg.split("=",2);
+  									subj_vj = subject[1];
+  								}
+  							} else if (arg.contains("Object")) {
+  								if (arg.contains(wp.word_one)) {
+  									String[] object = arg.split("=",2);
+  									obj_vi = object[1];
+  								}
+  								if (arg.contains(wp.word_two)) {
+  									String[] object = arg.split("=",2);
+  									obj_vj = object[1];	
+  									
+  								}
+  							}
+        				}
+        				pw.print(subj_vi + " ");
+        				pw.print(obj_vi + " ");
+        				pw.print(subj_vj + " ");
+        				pw.print(obj_vj + " ");
+        				if (verbsAndArgumentPairs.size() == 0)
+        					pw.print("null");
+        				else {
+    	    				for (j = 0; j < verbsAndArgumentPairs.size(); j++) {
+	        					pw.print(verbsAndArgumentPairs.get(j)+",");
+        					}
+        				}
+        				pw.print(" ");
+        				if (contextWords.size() == 0)
+        					pw.print("null");
+        				else {
+        					for (j = 0; j < contextWords.size(); j++) {
+	        					pw.print(contextWords.get(j)+",");
+    	    				}
+	        			}
+        				pw.print(" ");
+        				if (contextMainVerbs.size() == 0)
+        					pw.print("null");
+        				else {
+        					for (j = 0; j < contextMainVerbs.size(); j++) {
+        						pw.print(contextMainVerbs.get(j)+",");
+        					}
+        				}
+        				pw.print(" ");
+        				if (contextMainVerbPairs.size() == 0)
+        					pw.print("null");
+        				else {
+	        				for (j = 0; j < contextMainVerbPairs.size(); j++) {
+        						pw.print(contextMainVerbPairs.get(j)+",");
+        					}
+        				}
+        				pw.print("\n");
+        			}
+
+			    }
+			}
+			scanner.close();
+
+		} catch (Exception e) {
+      		e.printStackTrace();
+      	}
+      	pw.close();
+      	
     }
-    
-    // Open the file which has to be analyzed.
-    File[] files = null;
-    if (System.getProperty("os.name").toLowerCase().contains("windows")) 
-      files = new File(dirName).listFiles();
-    else
-      files = new File(uDirName).listFiles();
-    iterateFiles(files);
 
-    // The main class for users to run, train, and test the part of speech tagger.
-    // http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
-    MaxentTagger tagger = new MaxentTagger(modelFile);
-
-    // A fast, rule-based tokenizer implementation, which produces Penn Treebank style tokenization of English text.
-    // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
-    TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
-
-    // Go through each file in the list.
-    for (int id = 0; id < all_files.size(); id++) {
-
-      // Open the file.
-      BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(all_files.get(id)), "utf-8"));
       
-      // Produces a list of sentences from the document.
-      // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/DocumentPreprocessor.html
-      DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(r);
-      documentPreprocessor.setTokenizerFactory(ptbTokenizerFactory);
-
-      // Go through each sentence in the document.
-      for (List<HasWord> sentence : documentPreprocessor) {
-        
-        // Print the sentence
-        String sentenceString = Sentence.listToString(sentence, false).toLowerCase();
-        pw.println(sentenceString);
-
-        // Tag each sentence, producing a list of tagged words.
-        List<TaggedWord> tSentence = tagger.tagSentence(sentence);
-
-        // Print the tagged sentence.
-        pw.println(Sentence.listToString(tSentence, false));
-
-      }
-    }
-
-    pw.close();
-	}
 }
