@@ -54,14 +54,14 @@ public class create_verb_verb_pairs_with_sentences {
   public static void findVerbPairs(List<TaggedWord> tSentence) {
     List<String> verbs = new ArrayList<>();
     
-    // Check for verb one.
+    // Check for verbs.
     for (int i = 0; i < tSentence.size(); i++) {
       if (tSentence.get(i).tag().startsWith("VB")) {
         verbs.add(tSentence.get(i).word());
       }
     }
 
-    // If verbs exist both before and after the discourse marker, form all possible pairs of them.
+    // Form all possible pairs of them.
     for (int i = 0; i < verbs.size(); i++) {
       for (int j = i+1; j < verbs.size(); j++) {
         String s1 = verbs.get(i);
@@ -163,14 +163,11 @@ public class create_verb_verb_pairs_with_sentences {
     }
     pw.close();
 
-    // Output the Verb-Verb pairs to a file called verb-verb.txt;
+    // Output the Verb-Verb pairs to a file called input_features.txt;
     pw = new PrintWriter(new File("input_features.txt"));
 
     for (int i = 0; i < all_verb_pairs.size(); i++) {
       pw.print(all_verb_pairs.get(i).printWithSentences());
-      /*if (i != all_verb_pairs.size()-1) {
-        pw.print("\n");
-      }*/
     }
     pw.close();
   }

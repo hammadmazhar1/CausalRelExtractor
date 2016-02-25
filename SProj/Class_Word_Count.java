@@ -1,4 +1,4 @@
-public class Word_Count implements Comparable<Word_Count> {
+class Word_Count implements Comparable<Word_Count> {
   public int    actualCount;
   public int    documentCount;
   public String word;

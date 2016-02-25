@@ -343,7 +343,7 @@ public class analyze_files {
 
     // Populate the Words and Verb-Verb pair data.
     try {
-      Scanner scanner = new Scanner(new File("dictionary.txt"));
+      Scanner scanner = new Scanner(new File("count_words.txt"));
       totalNumWords = scanner.nextInt();
       totalSentences = scanner.nextInt();
       while (scanner.hasNextLine()) {
@@ -355,7 +355,7 @@ public class analyze_files {
       }
       scanner.close();
 
-      scanner = new Scanner(new File("verb-verb.txt"));
+      scanner = new Scanner(new File("count_verb_verb.txt"));
       while (scanner.hasNextLine()) {
         int i1 = scanner.nextInt();
         int i2 = scanner.nextInt();

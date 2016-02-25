@@ -1,0 +1,58 @@
+am - be
+1
+causal
+he said because of a , i am b , but to be fair , there is also c.
+am - being
+1
+causal
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
+am - conducted
+1
+causal
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
+am - is
+1
+causal
+he said because of a , i am b , but to be fair , there is also c.
+am - said
+1
+causal
+he said because of a , i am b , but to be fair , there is also c.
+are - is
+2
+causal
+there is a wide variety of food options , consequently , people in lums are happy and content .
+non-causal
+there is a wide variety of food options , consequently , people in lums are happy and content .
+become - do
+1
+causal
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
+become - know
+1
+causal
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
+become - say
+1
+causal
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
+being - opposed
+1
+causal
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
+conducted - opposed
+1
+causal
+i am vehemently opposed to lums because of the incredible mismanagement being conducted by the ro .
+do - is
+1
+causal
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
+is - know
+1
+causal
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .
+is - say
+1
+causal
+lums is a den of disgusting , spoilt brats who become so because of indulgent parents who do not know how to say no .

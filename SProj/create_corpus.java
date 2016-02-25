@@ -44,6 +44,24 @@ public class create_corpus {
   //=================================================================================
   //=================================================================================
 
+  /**
+   * Find a Word_Pair from the all_verb_pairs List
+   * @param  wp1 [The Word_Pair which is being searched for]
+   * @return     [The Word_Pair from the List, if it exists, or null]
+   */
+  public static Word_Pair find_WP(Word_Pair wp1) {
+    for (Word_Pair wp2 : all_verb_pairs) {
+      if (wp1.equals(wp2)) {
+        return wp2;
+      }
+    }
+
+    return null;
+  }
+
+  //=================================================================================
+  //=================================================================================
+
   public static void docWordCounter(int id) throws Exception {
     String content = new Scanner(all_files.get(id)).useDelimiter("\\Z").next().toLowerCase();
     content = content.replace(".", "");
@@ -77,7 +95,12 @@ public class create_corpus {
 
   //=================================================================================
   //=================================================================================
-
+  
+  /**
+   * Find locations of unambiguous discourse markers (both causal and non-causal) in the given sentence.
+   * @param tSentence [The input sentence to the function]
+   * @return          [List of locations of discourse markers along with their lengths]
+   */
   public static List<Pair> findPhraseLocations(List<TaggedWord> tSentence) {
     List<Pair> phraseLocations = new ArrayList<>();
 
@@ -110,6 +133,11 @@ public class create_corpus {
     return phraseLocations;
   }
 
+  /**
+   * Make pairs of verbs which appear before and after unambiguous discourse markers.
+   * @param  tSentence [The input sentence]
+   * @return           [A list of verb-verb pairs]
+   */
   public static void findVerbPairs(List<TaggedWord> tSentence) {
     List<Pair> phraseLocations = findPhraseLocations(tSentence);
     int start = 0;
@@ -161,21 +189,29 @@ public class create_corpus {
 
           // if the verbs are different
           if (!s1.toLowerCase().equals(s2.toLowerCase())) {
-            all_verb_pairs.add(new Word_Pair(s1, s2));
+            Word_Pair wp = new Word_Pair(s1, s2);
+            Word_Pair search = find_WP(wp);
+
+            if (search != null) {
+              search.actualIncrement();
+              search.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
+              if (phraseLocations.get(i).x < 6) {
+                search.sentences_tags.add("causal");
+              } else {
+                search.sentences_tags.add("non-causal");
+              }
+            } else {
+              all_verb_pairs.add(wp);
+              wp.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
+              wp.sentences_tags.add("causal");
+              if (phraseLocations.get(i).x < 6) {
+                wp.sentences_tags.add("causal");
+              } else {
+                wp.sentences_tags.add("non-causal");
+              }
+            }
           }
         }
-      }
-    }
-
-    // Removing duplicate Verb Pairs and incrementing their count.
-    Collections.sort(all_verb_pairs);
-    int size = all_verb_pairs.size() - 1;
-    for (int j = 0; j < size; j++) {
-      if (all_verb_pairs.get(j).equals(all_verb_pairs.get(j+1))) {
-        all_verb_pairs.get(j).actualIncrement();
-        all_verb_pairs.remove(j+1);
-        j--;
-        size--;
       }
     }
   }
@@ -286,6 +322,7 @@ public class create_corpus {
     pw.print("\n\n");
 
     // Printing the Verb Pairs.
+    Collections.sort(all_verb_pairs);
     pw.print("Verb Pairs\n");
     for (Word_Pair wp : all_verb_pairs) {
       pw.println(wp.print());
@@ -300,8 +337,8 @@ public class create_corpus {
 
     pw.close();
 
-    // Output the Words to a file called dictionary.txt;
-    pw = new PrintWriter(new File("dictionary.txt"));
+    // Output the Words to a file called count_words.txt;
+    pw = new PrintWriter(new File("count_words.txt"));
 
     for (Word_Count wc : doc_count_words) {
       totalNumWords += wc.actualCount;
@@ -317,13 +354,20 @@ public class create_corpus {
     }
     pw.close();
 
-    // Output the Verb-Verb pairs to a file called verb-verb.txt;
-    pw = new PrintWriter(new File("verb-verb.txt"));
+    // Output the Verb-Verb pairs to a file called count_verb_verb.txt;
+    pw = new PrintWriter(new File("count_verb_verb.txt"));
     for (int i = 0; i < all_verb_pairs.size(); i++) {
       pw.print(all_verb_pairs.get(i).print());
       if (i != all_verb_pairs.size()-1) {
         pw.print("\n");
       }
+    }
+    pw.close();
+    
+    // Output the Verb-Verb pairs to a file called input_features_tagged.txt;
+    pw = new PrintWriter(new File("input_features_tagged.txt"));
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      pw.print(all_verb_pairs.get(i).printWithSentences());
     }
     pw.close();
   }

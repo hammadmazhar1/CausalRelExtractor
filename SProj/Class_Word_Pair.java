@@ -1,12 +1,13 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class Word_Pair implements Comparable<Word_Pair> {
+class Word_Pair implements Comparable<Word_Pair> {
   public int          actualCount;
   public int          documentCount;
   public String       word_one;
   public String       word_two;
   public List<String> sentences;
+  public List<String> sentences_tags;
 
   public Word_Pair(String w1, String w2) {
     w1 = w1.toLowerCase();
@@ -19,9 +20,10 @@ public class Word_Pair implements Comparable<Word_Pair> {
       word_two = w1;
     }
 
-    actualCount = 1;
-    documentCount = 1;
-    sentences = new ArrayList<>();
+    actualCount     = 1;
+    documentCount   = 1;
+    sentences       = new ArrayList<>();
+    sentences_tags  = new ArrayList<>();
   }
 
   public Word_Pair(String w1, String w2, int _document, int _actual) {
@@ -35,9 +37,10 @@ public class Word_Pair implements Comparable<Word_Pair> {
       word_two = w1;
     }
 
-    actualCount = _actual;
-    documentCount = _document;
-    sentences = new ArrayList<>();
+    actualCount     = _actual;
+    documentCount   = _document;
+    sentences       = new ArrayList<>();
+    sentences_tags  = new ArrayList<>();
   }
 
   public String toString() {
@@ -51,8 +54,15 @@ public class Word_Pair implements Comparable<Word_Pair> {
   public String printWithSentences() {
     String temp = toString() + "\n";
     temp += Integer.toString(sentences.size()) + "\n";
-    for (int i = 0; i < sentences.size(); i++) {
-      temp += sentences.get(i) + "\n";      
+    if (sentences_tags.size() > 0) {
+      for (int i = 0; i < sentences.size(); i++) {
+        temp += sentences_tags.get(i) + "\n";
+        temp += sentences.get(i) + "\n";      
+      }
+    } else {
+      for (int i = 0; i < sentences.size(); i++) {
+        temp += sentences.get(i) + "\n";      
+      }
     }
     return temp;
   }
