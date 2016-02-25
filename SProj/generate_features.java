@@ -42,7 +42,7 @@ public class generate_features {
   static List<String>     phrases_all       = Arrays.asList("because", "for this reason", "for that reason", "consequently", "as a consequence of", "as a result of", "but", "in short", "in other words", "whereas", "on the other hand", "nevertheless", "nonetheless", "in spite of", "in contrast", "however", "even", "though", "despite the fact", "conversely", "although");
   static List<Integer>    length_phrases_all= Arrays.asList(1, 3, 3, 1, 4, 4, 1, 2, 3, 1, 4, 1, 1, 3, 2, 1, 1, 1, 3, 1, 1);
   static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
-  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/test";
+  static String           uDirName          = System.getProperty("user.dir") + "/textfiles/test";
   static String           modelFile         = "models\\english-left3words-distsim.tagger";
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
@@ -79,6 +79,11 @@ public class generate_features {
   //=================================================================================
   //=================================================================================
 
+  /**
+   * Find locations of unambiguous discourse markers (both causal and non-causal) in the given sentence.
+   * @param tSentence [The input sentence to the function]
+   * @return          [List of locations of discourse markers along with their lengths]
+   */
   public static List<Pair> findPhraseLocations(List<TaggedWord> tSentence) {
     List<Pair> phraseLocations = new ArrayList<>();
 
@@ -111,6 +116,11 @@ public class generate_features {
     return phraseLocations;
   }
 
+  /**
+   * Make pairs of verbs which appear before and after unambiguous discourse markers.
+   * @param  tSentence [The input sentence]
+   * @return           [A list of verb-verb pairs]
+   */
   public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence) {
     List<Word_Pair> returnValue = new ArrayList<>();
     List<Pair> phraseLocations = findPhraseLocations(tSentence);
@@ -606,12 +616,16 @@ public class generate_features {
     }
   }
 
+  //=================================================================================
+  //=================================================================================
+
 	public static void main(String[] args) throws Exception {
 		pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
 		if (args.length < 2) {
 			System.out.println("Usage: java -cp \".:lib/*\" generate_features [-l] <inputfilename> <outputfilename> ");
 			return;
 		}
+
 		boolean labelled = false;
 		String inputFile = null;
 		String outputFile = null;
@@ -746,13 +760,9 @@ public class generate_features {
 			    }
 			}
 			scanner.close();
-
 		} catch (Exception e) {
-      		e.printStackTrace();
-      	}
-      	pw.close();
-      	
-    }
-
-      
+  		e.printStackTrace();
+  	}
+  	pw.close();
+  }
 }

@@ -1,4 +1,4 @@
-public class Pair {
+class Pair {
   public int x;
   public int y;
 
