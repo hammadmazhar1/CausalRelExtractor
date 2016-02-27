@@ -83,13 +83,16 @@ public class create_corpus {
 
     // Increment actual counter for words.
     for (Word_Count wc : doc_count_words) {
+      if(!wc.word.equals("?")){
       int i = 0;
+      System.out.println(wc.word);
       Pattern p = Pattern.compile(wc.word);
       Matcher m = p.matcher(content);
       while (m.find()) {
           i++;
       }
       wc.actualIncrement(i);
+      }
     }
   }
 

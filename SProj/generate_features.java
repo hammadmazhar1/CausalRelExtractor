@@ -257,6 +257,7 @@ public class generate_features {
     		returnValue.add(word.getSenseKey().toString());
 	   	}
     }
+    dict.close();
   	return returnValue;
   }
 
@@ -370,6 +371,7 @@ public class generate_features {
         }
       }
     }
+    dict.close();
     return returnValue;
   }
 
@@ -463,7 +465,8 @@ public class generate_features {
     	returnValue.add("Object_"+wp.word_one+"=null");
     if (!obj_vj)
     	returnValue.add("Object_"+wp.word_two+"=null");
-  	return returnValue;
+    dict.close();
+    return returnValue;
   }
 
   /**
@@ -581,6 +584,7 @@ public class generate_features {
     			returnValue.add(new TaggedWord(lemList.get(0),tw.tag()));
   		}
   	}
+    dict.close();
   	return returnValue;
   }
 
@@ -625,11 +629,14 @@ public class generate_features {
 			System.out.println("Usage: java -cp \".:lib/*\" generate_features [-l] <inputfilename> <outputfilename> ");
 			return;
 		}
-
+		/*for (int i = 0; i < args.length;i++) {
+			System.out.println(args[i]);
+		}*/
 		boolean labelled = false;
 		String inputFile = null;
 		String outputFile = null;
-		if (args[0].equals("-l")) {
+		if (args[0].equals("l")) {
+			//System.out.println()
 			labelled = true;
 			inputFile = args[1];
 			outputFile = args[2];
@@ -647,7 +654,7 @@ public class generate_features {
     	//TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
     	// Open the file provided in command line args
     	try {
-      		Scanner scanner = new Scanner(new File(args[0]));
+      		Scanner scanner = new Scanner(new File(inputFile));
       		while (scanner.hasNextLine()) {
       		  	String verb_pair = scanner.nextLine();
       		  	//System.out.println(verb_pair);
@@ -677,13 +684,14 @@ public class generate_features {
         				// print out features and instance pair
         				int j = 0;
         				pw.print(wp.word_one + "-" + wp.word_two+ "	");
+        				if (labelled) {
+        					pw.print(label + "	");
+        				}
         				for (j = 0; j < verbs.size(); j++) {
         					pw.print(verbs.get(j)+",");
         				}
-        				pw.print(" ");
-        				if (labelled) {
-        					pw.print(label + " ");
-        				}
+        				pw.print("	");
+        				
         				if (verbPhrases.size() == 0)
         					pw.print("null");
         				else {
@@ -691,7 +699,7 @@ public class generate_features {
         						pw.print(verbPhrases.get(j)+",");
         					}
         				}
-        				pw.print(" ");
+        				pw.print("	");
         				String subj_vi = null;
         				String subj_vj = null;
         				String obj_vi = null;
@@ -719,10 +727,10 @@ public class generate_features {
   								}
   							}
         				}
-        				pw.print(subj_vi + " ");
-        				pw.print(obj_vi + " ");
-        				pw.print(subj_vj + " ");
-        				pw.print(obj_vj + " ");
+        				pw.print(subj_vi + "	");
+        				pw.print(obj_vi + "	");
+        				pw.print(subj_vj + "	");
+        				pw.print(obj_vj + "	");
         				if (verbsAndArgumentPairs.size() == 0)
         					pw.print("null");
         				else {
@@ -730,7 +738,7 @@ public class generate_features {
 	        					pw.print(verbsAndArgumentPairs.get(j)+",");
         					}
         				}
-        				pw.print(" ");
+        				pw.print("	");
         				if (contextWords.size() == 0)
         					pw.print("null");
         				else {
@@ -738,7 +746,7 @@ public class generate_features {
 	        					pw.print(contextWords.get(j)+",");
     	    				}
 	        			}
-        				pw.print(" ");
+        				pw.print("	");
         				if (contextMainVerbs.size() == 0)
         					pw.print("null");
         				else {
@@ -746,7 +754,7 @@ public class generate_features {
         						pw.print(contextMainVerbs.get(j)+",");
         					}
         				}
-        				pw.print(" ");
+        				pw.print("	");
         				if (contextMainVerbPairs.size() == 0)
         					pw.print("null");
         				else {
@@ -755,6 +763,7 @@ public class generate_features {
         					}
         				}
         				pw.print("\n");
+        				pw.flush();
         			}
 
 			    }
