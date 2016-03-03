@@ -19,6 +19,33 @@ class Word_Count implements Comparable<Word_Count> {
     return Integer.toString(documentCount) + "            " + Integer.toString(actualCount) + "          " + word;
   }
 
+  public String prettyPrint() {
+    String s = Integer.toString(documentCount);
+    int temp = documentCount;
+    int num = 0;
+    while (temp > 0) {
+      temp /= 10;
+      num++;
+    }
+    for (int i = 14; i > num; i--) {
+      s += " ";
+    }
+
+    s += Integer.toString(actualCount);
+    temp = actualCount;
+    num = 0;
+    while (temp > 0) {
+      temp /= 10;
+      num++;
+    }
+    for (int i = 14; i > num; i--) {
+      s += " ";
+    }
+
+    s += word;
+    return s;
+  }
+
   public boolean equals(Word_Count wc) {
     return word.equals(wc.word);
   }

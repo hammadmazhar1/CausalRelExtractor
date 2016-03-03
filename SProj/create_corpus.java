@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +46,20 @@ public class create_corpus {
   //=================================================================================
 
   /**
+   * Find a Word_Count from the doc_count_words List
+   * @param  wc1 [The Word_Count which is being searched for]
+   * @return     [The Word_Count from the List, if it exists, or null]
+   */
+  public static Word_Count find_WC(Word_Count wc1) {
+    for (Word_Count wc2 : doc_count_words) {
+      if (wc1.equals(wc2)) {
+        return wc2;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Find a Word_Pair from the all_verb_pairs List
    * @param  wp1 [The Word_Pair which is being searched for]
    * @return     [The Word_Pair from the List, if it exists, or null]
@@ -55,20 +70,42 @@ public class create_corpus {
         return wp2;
       }
     }
-
     return null;
   }
 
   //=================================================================================
   //=================================================================================
 
-  public static void docWordCounter(int id) throws Exception {
+  public static String docWordCounter(int id) throws Exception {
     String content = new Scanner(all_files.get(id)).useDelimiter("\\Z").next().toLowerCase();
-    content = content.replace(".", "");
-    content = content.replace(",", "");
+    content = content.replace(".", " ");
+    content = content.replace(",", " ");
+    content = content.replace("?", " ");
+    content = content.replace("!", " ");
+    content = content.replace(";", " ");
+    content = content.replace("-", " ");
+    content = content.replace("_", " ");
+    content = content.replace("`", " ");
+    content = content.replace("=", " ");
+    content = content.replace("@", " ");
+    content = content.replace("#", " ");
+    content = content.replace("$", " ");
+    content = content.replace("%", " ");
+    content = content.replace("^", " ");
+    content = content.replace("&", " ");
+    content = content.replace("*", " ");
+    content = content.replace("(", " ");
+    content = content.replace(")", " ");
+    content = content.replace("[", " ");
+    content = content.replace("]", " ");
+    content = content.replace("{", " ");
+    content = content.replace("}", " ");
+    content = content.replace("\'", " ");
+    content = content.replace("\"", " ");
 
     // Increment document counter for words. Add new words to doc_count_words.
-    Set<String> set = new HashSet<String>(Arrays.asList(content.split(" ")));
+    List<String> words = Arrays.asList(content.split(" "));
+    Set<String> set = new HashSet<String>(words);
 
     for (String s : set) {
       Word_Count temp = new Word_Count(s);
@@ -82,18 +119,16 @@ public class create_corpus {
     }
 
     // Increment actual counter for words.
-    for (Word_Count wc : doc_count_words) {
-      if(!wc.word.equals("?")){
-      int i = 0;
-      System.out.println(wc.word);
-      Pattern p = Pattern.compile(wc.word);
-      Matcher m = p.matcher(content);
-      while (m.find()) {
-          i++;
-      }
-      wc.actualIncrement(i);
+    for (String s : words) {
+      Word_Count wc = new Word_Count(s);
+      Word_Count search = find_WC(wc);
+
+      if (search != null) {
+        search.actualIncrement();
       }
     }
+
+    return content;
   }
 
   //=================================================================================
@@ -265,7 +300,7 @@ public class create_corpus {
 
       // Check for occurrences for the (non-)causal strings in the current document, increment the occurrence counter for use in IDF function.
       // Find out which (non-)causal string to check for in the current document
-      docWordCounter(id);
+      String content = docWordCounter(id);
 
       // Open the file.
       BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "utf-8"));
@@ -273,6 +308,7 @@ public class create_corpus {
       // Produces a list of sentences from the document.
       // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/DocumentPreprocessor.html
       DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(r);
+      // DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(new StringReader(content));
       documentPreprocessor.setTokenizerFactory(ptbTokenizerFactory);
 
       // Go through each sentence in the document.
@@ -319,6 +355,7 @@ public class create_corpus {
     // Printing the Inverse Document Frequency Count
     pw.print("DOCUMENT     ACTUAL     WORD\n");
     Collections.sort(doc_count_words);
+    if (doc_count_words.get(0).word.equals("")) {doc_count_words.remove(0);}
     for (int i = 0; i < doc_count_words.size(); i++) {
       pw.println(doc_count_words.get(i).print());
     }
@@ -350,7 +387,7 @@ public class create_corpus {
     pw.println(totalSentences);
 
     for (int i = 0; i < doc_count_words.size(); i++) {
-      pw.print(doc_count_words.get(i).print());
+      pw.print(doc_count_words.get(i).prettyPrint());
       if (i != doc_count_words.size()-1) {
         pw.print("\n");
       }
