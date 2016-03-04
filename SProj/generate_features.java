@@ -626,7 +626,7 @@ public class generate_features {
 	public static void main(String[] args) throws Exception {
 		pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
 		if (args.length < 2) {
-			System.out.println("Usage: java -cp \".:lib/*\" generate_features [-l] <inputfilename> <outputfilename> ");
+			System.out.println("Usage: java -cp \".:lib/*\" generate_features [l] <inputfilename> <outputfilename> ");
 			return;
 		}
 		/*for (int i = 0; i < args.length;i++) {
@@ -635,6 +635,8 @@ public class generate_features {
 		boolean labelled = false;
 		String inputFile = null;
 		String outputFile = null;
+    int causal = 0;
+    int non_causal = 0;
 		if (args[0].equals("l")) {
 			//System.out.println()
 			labelled = true;
@@ -667,6 +669,10 @@ public class generate_features {
         				String label = null;
         				if (labelled) {
         					label = scanner.nextLine();
+                  if (label.equals("causal"))
+                    causal++;
+                  else
+                    non_causal++;
         				}
         				String s = scanner.nextLine();
         				//System.out.println(s);
@@ -772,6 +778,7 @@ public class generate_features {
 		} catch (Exception e) {
   		e.printStackTrace();
   	}
+    System.out.println("Causal Examples="+causal+",Non Causal Examples="+non_causal);
   	pw.close();
   }
 }

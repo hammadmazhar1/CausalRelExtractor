@@ -1,18 +1,30 @@
-Explicit Causal Association:
+Explicit Causal Association(Saad):
   ☐ Eq 3.8,    Page 42
   ☐ Eq 3.9,    Page 42
 
-Implicit Causal Association:
+Implicit Causal Association(Saad):
   ☐ Table 3.3, Page 45       Assign Roles of Events in Causal Relations (cause-effect)
   ☐ Eq 3.11,   Page 45
   ☐ Eq 3.12,   Page 45
   ☐ Eq 3.13,   Page 45
   ☐ Eq 3.14,   Page 46
 
-Ranking Scores of Verbs:
+Ranking Scores of Verbs(Saad):
   ☐ Eq 3.15,   Page 47
 
-Categories of Verb-Verb Pairs:
+Categories of Verb-Verb Pairs(Saad):
   ☐ Splitting ranked list of verbs into thirds, assigning labels.
+Previous sections should be complete in the same week
+Identification of Causal Semantics of Verbs(Hammad) (2 weeks approx):
+  ☐ Linguistic Definition of Events, Section 3.3.1, Page 50,  Build supervised classifier
+  ☐ Semantic Classes of Events, Section 3.3.2, Page 52, Code Procedure 3.1
 
-  
+Identifying Causality in Verb-Verb Pairs (2-3 weeks):
+  ☐ Eq 4.1(Saad),   Page 56        Code Integer Linear Program
+  ☐ Eq 4.4(Saad),   Page 57
+  ☐ Eq 4.8(Saad),  Page 59
+  ☐ Eq 4.13(Hammad), Page 61
+  ☐ Eq 4.21(Hammad), Page 62
+  ☐ Combine prev Work to form Eq in Section 4.1.4 and 4.1.5(Hammad)
+Evaluations(1 week):
+  ☐ Perform evalations on availabel corpora

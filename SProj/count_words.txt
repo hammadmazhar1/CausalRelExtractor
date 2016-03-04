@@ -1,5 +1,5 @@
 172923
-5134
+5113
 1             1             0
 42            103           000
 1             1             006
@@ -1896,7 +1896,7 @@
 3             3             cadre
 1             1             cafe
 1             1             cafeteria
-1             1             caf„©
+1             1             caf√©
 1             1             caging
 2             2             cain
 1             1             caitlyn
@@ -2368,7 +2368,7 @@
 1             1             clerics
 5             7             clerk
 5             7             cleveland
-1             1             clich„©s
+1             1             clich√©s
 1             1             click
 1             1             clicks
 3             3             client
@@ -3046,7 +3046,7 @@
 2             2             crises
 18            28            crisis
 1             1             crisp
-1             1             crist„≥bal
+1             1             crist√≥bal
 2             2             criteria
 5             5             critic
 15            22            critical
@@ -3987,10 +3987,10 @@
 1             1             dynasties
 3             3             dysfunction
 1             1             dysfunctional
-1             1             d„°te
-1             1             d„©cor
-1             1             d„©tente
-1             4             d„≠az
+1             1             d√°te
+1             1             d√©cor
+1             1             d√©tente
+1             4             d√≠az
 20            25            e
 35            51            each
 10            11            eager
@@ -5292,7 +5292,7 @@
 1             1             georgetown
 8             16            georgia
 1             1             georgians
-1             1             geo‚≠political
+1             1             geo¬≠political
 4             4             gerald
 1             1             gergen
 2             6             german
@@ -5502,7 +5502,7 @@
 1             1             gruber
 2             2             gruesome
 1             1             grumpy
-1             1             guant„°namo
+1             1             guant√°namo
 5             6             guarantee
 2             2             guaranteed
 2             2             guarantees
@@ -5537,7 +5537,7 @@
 10            17            guy
 8             10            guys
 1             1             guys:
-1             2             guzm„°n
+1             2             guzm√°n
 2             2             gym
 1             1             gymnasium
 1             2             gynecologists
@@ -6679,7 +6679,7 @@
 17            19            joseph
 3             3             josh
 1             1             jostled
-2             2             jos„©
+2             2             jos√©
 3             3             jour
 11            12            journal
 1             1             journal/nbc
@@ -6862,7 +6862,7 @@
 2             2             kuwaiti
 1             5             kvamme
 3             3             ky
-1             1             k„§the
+1             1             k√§the
 10            12            l
 2             2             la
 1             1             lab
@@ -7626,7 +7626,7 @@
 1             1             michele
 4             4             michelle
 8             9             michigan
-1             1             mich„®le
+1             1             mich√®le
 1             1             mick
 1             1             micro
 1             1             microcosm
@@ -7936,7 +7936,7 @@
 1             1             mythical
 1             1             mythologizer
 1             1             mythos
-1             2             m„©ndez
+1             2             m√©ndez
 23            50            n
 2             2             nadir
 2             2             nagging
@@ -7997,7 +7997,7 @@
 1             1             nazi
 3             3             nazis
 1             1             nazri
-5             5             na„Øve
+5             5             na√Øve
 8             8             nbc
 2             2             nbc/wall
 1             1             nea
@@ -8762,7 +8762,7 @@
 1             1             pegged
 1             1             pell
 4             6             pelosi
-1             1             peluqu„≠n
+1             1             peluqu√≠n
 1             2             pen
 4             8             penalty
 1             1             pending
@@ -10304,7 +10304,7 @@
 1             1             rode
 1             1             rodell
 53            69            rodham
-1             1             rodr„≠guez
+1             1             rodr√≠guez
 1             4             roe
 1             2             roger
 1             1             rogers
@@ -10414,8 +10414,8 @@
 1             4             russo
 1             1             ryan
 1             1             rye
-3             3             r„©sum„©
-1             1             r„©sum„©s
+3             3             r√©sum√©
+1             1             r√©sum√©s
 139           2077          s
 1             1             saadat
 1             2             sabah
@@ -11771,7 +11771,7 @@
 2             3             systematically
 4             7             systems
 1             1             szostkiewicz
-1             3             s„°nchez
+1             3             s√°nchez
 111           408           t
 1             1             tab
 8             10            table
@@ -13367,11 +13367,11 @@
 1             1             zones
 1             3             zopp
 1             1             zsolt
-1             4             ‚≠policy
+1             4             ¬≠policy
+1             4             ‚Äâ
+6             32            ‚Äì
+1             1             ‚Äìperhaps
+2             3             ‚Ä¶
 1             1             ‚Ç¨10
 1             1             ‚Ç¨50
 1             1             ‚Ç¨86
-2             3             ‚Ä¶
-6             32            ‚Äì
-1             1             ‚Äìperhaps
-1             4             ‚Äâ
