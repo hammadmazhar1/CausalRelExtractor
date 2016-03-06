@@ -15,11 +15,11 @@ Ranking Scores of Verbs (Saad): @due(16-03-14 01:43)
 Categories of Verb-Verb Pairs (Saad): @due(16-03-15 01:45)
   ☐ Splitting ranked list of verbs into thirds, assigning labels.
 
-Identification of Causal Semantics of Verbs (Hammad) (2 weeks approx):
+Identification of Causal Semantics of Verbs (Hammad) @due(20-03-15 00:00):
   ☐ Linguistic Definition of Events, Section 3.3.1, Page 50,  Build supervised classifier
   ☐ Semantic Classes of Events, Section 3.3.2, Page 52, Code Procedure 3.1
 
-Identifying Causality in Verb-Verb Pairs (2-3 weeks):
+Identifying Causality in Verb-Verb Pairs (3-04-15 00:00):
   ☐ Eq 4.1(Saad),   Page 56        Code Integer Linear Program
   ☐ Eq 4.4(Saad),   Page 57
   ☐ Eq 4.8(Saad),  Page 59
@@ -27,5 +27,5 @@ Identifying Causality in Verb-Verb Pairs (2-3 weeks):
   ☐ Eq 4.21(Hammad), Page 62
   ☐ Combine prev Work to form Eq in Section 4.1.4 and 4.1.5 (Hammad)
 
-Evaluations (1 week):
+Evaluations @due(10-04-15 00:00):
   ☐ Perform evalations on available corpora
