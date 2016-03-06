@@ -193,7 +193,7 @@ public class generate_features {
     List<String> returnValue = new ArrayList<>();
     
     // construct the URL to the Wordnet dictionary directory
-    String wnhome = System.getenv("WNHOME");
+    String wnhome = System.getProperty("user.dir");
     String path = wnhome + File.separator + "dict";
     URL url = null;
     try{ url = new URL("file", null, path); } 
@@ -290,7 +290,7 @@ public class generate_features {
    */
   static List<String> feature_verbPhrases(Word_Pair wp, List<TaggedWord> tSentence) {
     // form wordnet url
-    String wnhome = System.getenv("WNHOME");
+    String wnhome = System.getProperty("user.dir");
     String path = wnhome + File.separator + "dict";
     URL url = null;
     try{ url = new URL("file", null, path); } 
@@ -381,7 +381,7 @@ public class generate_features {
   static List<String> feature_verbArguments(Word_Pair wp, List<TaggedWord> tSentence) {
   	List<String> returnValue = new ArrayList<String>();
   	GrammaticalStructure gs = parser.predict(tSentence);
-  	String wnhome = System.getenv("WNHOME");
+  	String wnhome = System.getProperty("user.dir");
     String path = wnhome + File.separator + "dict";
     URL url = null;
     try{ url = new URL("file", null, path); } 
@@ -559,7 +559,7 @@ public class generate_features {
    * all main verbs and their lemmas from the mincontext.
    */
   static List<TaggedWord> feature_contextMainVerbs(List<TaggedWord> minContext) {
-  	String wnhome = System.getenv("WNHOME");
+  	String wnhome = System.getProperty("user.dir");
     String path = wnhome + File.separator + "dict";
     URL url = null;
     try{ url = new URL("file", null, path); } 
