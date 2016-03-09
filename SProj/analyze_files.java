@@ -233,7 +233,7 @@ public class analyze_files {
     for (int i = 0; i < tSentence.size(); i++) {
 
       for (int k = 0; k < phrases_all.size(); k++) {
-        List<String> phrase = Arrays.asList(phrases_all.get(k).split(" "));
+        List<String> phrase = Arrays.asList(phrases_all.get(k).split("\\s+"));
 
         // Find the position of the (non-)causal phrase.
         boolean found = false;

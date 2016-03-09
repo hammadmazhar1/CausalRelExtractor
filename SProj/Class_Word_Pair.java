@@ -53,6 +53,8 @@ class Word_Pair implements Comparable<Word_Pair> {
 
   public String printWithSentences() {
     String temp = toString() + "\n";
+    temp += Integer.toString(documentCount) + "\n";
+    temp += Integer.toString(actualCount) + "\n";
     temp += Integer.toString(sentences.size()) + "\n";
     if (sentences_tags.size() > 0) {
       for (int i = 0; i < sentences.size(); i++) {
@@ -103,5 +105,9 @@ class Word_Pair implements Comparable<Word_Pair> {
     } else {
         return 1;
     }
+  }
+
+  public boolean contains(String s) {
+    return (word_one.contains(s) || word_two.contains(s));
   }
 }

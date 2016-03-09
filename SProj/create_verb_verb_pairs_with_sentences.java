@@ -18,6 +18,7 @@ import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
@@ -73,6 +74,7 @@ public class create_verb_verb_pairs_with_sentences {
           Word_Pair search = find_WP(wp);
 
           if (search != null) {
+            search.actualIncrement();
             search.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
           } else {
             all_verb_pairs.add(wp);
@@ -138,8 +140,17 @@ public class create_verb_verb_pairs_with_sentences {
       // Go through each sentence in the document.
       for (List<HasWord> sentence : documentPreprocessor) {
         // Print the sentence
-        String sentenceString = Sentence.listToString(sentence, false).toLowerCase();
-        pw.println(sentenceString);
+        String content = Sentence.listToString(sentence, false).toLowerCase();
+        content = create_corpus.removePunctuation(content);
+        
+        List<String> words = Arrays.asList(content.split("\\s+"));
+        sentence.clear();
+        for (String word : words) {
+          sentence.add(new Word(word));
+        }
+
+        content = Sentence.listToString(sentence, false).toLowerCase();
+        pw.println(content);
 
         // Tag each sentence, producing a list of tagged words.
         List<TaggedWord> tSentence = tagger.tagSentence(sentence);
@@ -147,8 +158,27 @@ public class create_verb_verb_pairs_with_sentences {
         // Print the tagged sentence.
         pw.println(Sentence.listToString(tSentence, false));
 
+        // Make a backup of all_verb_pairs so we can check for differences and increment document count.
+        List<Word_Pair> oldList = new ArrayList<>();
+        List<Integer> oldActualCounts = new ArrayList<>();
+        for (Word_Pair wp : all_verb_pairs) {
+          oldList.add(wp);
+          int i = wp.actualCount;
+          oldActualCounts.add(i);
+        }
+
         // Find pairs of verbs before and after the unambiguous discourse markers.
         findVerbPairs(tSentence);
+
+        // Incrementing the document count for the pairs.
+        for (int i = 0; i < oldList.size(); i++) {
+          if (oldList.get(i).actualCount != oldActualCounts.get(i)) {
+            oldList.get(i).documentIncrement();
+          }
+        }
+        sentence = null;
+        oldList = null;
+        oldActualCounts = null;
 
         pw.println("\n");
       }
@@ -158,8 +188,15 @@ public class create_verb_verb_pairs_with_sentences {
 
     // Printing the Verb Pairs.
     pw.print("Verb Pairs\n");
-    for (Word_Pair wp : all_verb_pairs) {
-      pw.println(wp.print());
+    Collections.sort(all_verb_pairs);
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      Word_Pair wp = all_verb_pairs.get(i);
+      if (wp.word_one.equals("") || wp.word_two.equals("")) {
+        all_verb_pairs.remove(i);
+        i--;
+      } else {
+        pw.println(wp.print());
+      }
     }
     pw.close();
 

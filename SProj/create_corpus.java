@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,8 +75,7 @@ public class create_corpus {
   //=================================================================================
   //=================================================================================
 
-  public static String docWordCounter(int id) throws Exception {
-    String content = new Scanner(all_files.get(id)).useDelimiter("\\Z").next().toLowerCase();
+  public static String removePunctuation(String content) {
     content = content.replace(".", " ");
     content = content.replace(",", " ");
     content = content.replace("?", " ");
@@ -102,9 +100,15 @@ public class create_corpus {
     content = content.replace("}", " ");
     content = content.replace("\'", " ");
     content = content.replace("\"", " ");
+    return content;
+  }
+
+  public static String docWordCounter(int id) throws Exception {
+    String content = new Scanner(all_files.get(id)).useDelimiter("\\Z").next().toLowerCase();
+    content = removePunctuation(content);
 
     // Increment document counter for words. Add new words to doc_count_words.
-    List<String> words = Arrays.asList(content.split(" "));
+    List<String> words = Arrays.asList(content.split("\\s+"));
     Set<String> set = new HashSet<String>(words);
 
     for (String s : set) {
@@ -146,7 +150,7 @@ public class create_corpus {
     for (int i = 0; i < tSentence.size(); i++) {
 
       for (int k = 0; k < phrases_all.size(); k++) {
-        List<String> phrase = Arrays.asList(phrases_all.get(k).split(" "));
+        List<String> phrase = Arrays.asList(phrases_all.get(k).split("\\s+"));
 
         // Find the position of the (non-)causal phrase.
         boolean found = false;

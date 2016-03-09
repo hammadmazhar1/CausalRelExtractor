@@ -47,8 +47,8 @@ public class generate_features {
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
   static int              totalSentences    = 0;
-  static DependencyParser parser 			= DependencyParser.loadFromModelFile("models\\english_UD.gz");
-  static LexicalizedParser lp 				= LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
+  static DependencyParser parser 			      = DependencyParser.loadFromModelFile("models\\english_UD.gz");
+  static LexicalizedParser lp 				      = LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
   static MaxentTagger     tagger            = new MaxentTagger("models\\english-left3words-distsim.tagger");;
 
   //=================================================================================
@@ -91,7 +91,7 @@ public class generate_features {
     for (int i = 0; i < tSentence.size(); i++) {
 
       for (int k = 0; k < phrases_all.size(); k++) {
-        List<String> phrase = Arrays.asList(phrases_all.get(k).split(" "));
+        List<String> phrase = Arrays.asList(phrases_all.get(k).split("\\s+"));
 
         // Find the position of the (non-)causal phrase.
         boolean found = false;
@@ -647,133 +647,133 @@ public class generate_features {
 			outputFile = args[1];
 		}
 		pw = new PrintWriter(new File(outputFile));
-    	// The main class for users to run, train, and test the part of speech tagger.
-    	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
-    	//MaxentTagger tagger = new MaxentTagger(modelFile);
+  	// The main class for users to run, train, and test the part of speech tagger.
+  	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
+  	//MaxentTagger tagger = new MaxentTagger(modelFile);
 
-    	// A fast, rule-based tokenizer implementation, which produces Penn Treebank style tokenization of English text.
-    	// http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
-    	//TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
-    	// Open the file provided in command line args
-    	try {
-      		Scanner scanner = new Scanner(new File(inputFile));
-      		while (scanner.hasNextLine()) {
-      		  	String verb_pair = scanner.nextLine();
-      		  	//System.out.println(verb_pair);
-      		  	if (!verb_pair.equals("\n")){
-        			String[] verbs_pair = verb_pair.split(" ",3);
-        			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],0,0);
-        			int sentences = Integer.parseInt(scanner.nextLine());
-        			//System.out.println(sentences);
-        			for (int i = 0; i < sentences; i++) {
-        				String label = null;
-        				if (labelled) {
-        					label = scanner.nextLine();
-                  if (label.equals("causal"))
-                    causal++;
-                  else
-                    non_causal++;
-        				}
-        				String s = scanner.nextLine();
-        				//System.out.println(s);
-        				List<HasWord> sent = Sentence.toWordList(s);
-        				List<TaggedWord> tSentence = tagger.tagSentence(sent);
-        				//System.out.println(Sentence.listToString(tSentence,false));
-        				List<String> verbs = feature_verbs(wp,tSentence);
-        				List<String> verbPhrases = feature_verbPhrases(wp,tSentence);
-        				List<String> verbArguments = feature_verbArguments(wp,tSentence);
-        				List<String> verbsAndArgumentPairs = feature_verbsAndArgumentPairs(wp,tSentence);
-        				List<TaggedWord> contextWords = feature_contextWords(wp,tSentence);
-        				List<TaggedWord> contextMainVerbs = feature_contextMainVerbs(contextWords);
-        				List<Word_Pair> contextMainVerbPairs = feature_contextMainVerbPairs(contextMainVerbs);
+  	// A fast, rule-based tokenizer implementation, which produces Penn Treebank style tokenization of English text.
+  	// http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
+  	//TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
+  	// Open the file provided in command line args
+  	try {
+  		Scanner scanner = new Scanner(new File(inputFile));
+  		while (scanner.hasNextLine()) {
+		  	String verb_pair = scanner.nextLine();
+		  	//System.out.println(verb_pair);
+		  	if (!verb_pair.equals("\n")) {
+    			String[] verbs_pair = verb_pair.split(" ",3);
+    			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],0,0);
+          scanner.nextLine();
+          scanner.nextLine();
+    			int sentences = Integer.parseInt(scanner.nextLine());
+    			//System.out.println(sentences);
+    			for (int i = 0; i < sentences; i++) {
+    				String label = null;
+    				if (labelled) {
+    					label = scanner.nextLine();
+              if (label.equals("causal"))
+                causal++;
+              else
+                non_causal++;
+    				}
+    				String s = scanner.nextLine();
+    				//System.out.println(s);
+    				List<HasWord> sent = Sentence.toWordList(s);
+    				List<TaggedWord> tSentence = tagger.tagSentence(sent);
+    				//System.out.println(Sentence.listToString(tSentence,false));
+    				List<String> verbs = feature_verbs(wp,tSentence);
+    				List<String> verbPhrases = feature_verbPhrases(wp,tSentence);
+    				List<String> verbArguments = feature_verbArguments(wp,tSentence);
+    				List<String> verbsAndArgumentPairs = feature_verbsAndArgumentPairs(wp,tSentence);
+    				List<TaggedWord> contextWords = feature_contextWords(wp,tSentence);
+    				List<TaggedWord> contextMainVerbs = feature_contextMainVerbs(contextWords);
+    				List<Word_Pair> contextMainVerbPairs = feature_contextMainVerbPairs(contextMainVerbs);
 
-        				// print out features and instance pair
-        				int j = 0;
-        				pw.print(wp.word_one + "-" + wp.word_two+ "	");
-        				if (labelled) {
-        					pw.print(label + "	");
-        				}
-        				for (j = 0; j < verbs.size(); j++) {
-        					pw.print(verbs.get(j)+",");
-        				}
-        				pw.print("	");
-        				
-        				if (verbPhrases.size() == 0)
-        					pw.print("null");
-        				else {
-	        				for (j = 0; j < verbPhrases.size(); j++) {
-        						pw.print(verbPhrases.get(j)+",");
-        					}
-        				}
-        				pw.print("	");
-        				String subj_vi = null;
-        				String subj_vj = null;
-        				String obj_vi = null;
-        				String obj_vj = null;
-        				for (j = 0; j < verbArguments.size(); j++) {
-        					String arg = verbArguments.get(j);
-        					if (arg.contains("Subject")) {
-  								if (arg.contains(wp.word_one)) {
-  									String[] subject = arg.split("=",2);
-  									subj_vi = subject[1];
-  								}
-  								else if (arg.contains(wp.word_two)) {
-  									String[] subject = arg.split("=",2);
-  									subj_vj = subject[1];
-  								}
-  							} else if (arg.contains("Object")) {
-  								if (arg.contains(wp.word_one)) {
-  									String[] object = arg.split("=",2);
-  									obj_vi = object[1];
-  								}
-  								if (arg.contains(wp.word_two)) {
-  									String[] object = arg.split("=",2);
-  									obj_vj = object[1];	
-  									
-  								}
-  							}
-        				}
-        				pw.print(subj_vi + "	");
-        				pw.print(obj_vi + "	");
-        				pw.print(subj_vj + "	");
-        				pw.print(obj_vj + "	");
-        				if (verbsAndArgumentPairs.size() == 0)
-        					pw.print("null");
-        				else {
-    	    				for (j = 0; j < verbsAndArgumentPairs.size(); j++) {
-	        					pw.print(verbsAndArgumentPairs.get(j)+",");
-        					}
-        				}
-        				pw.print("	");
-        				if (contextWords.size() == 0)
-        					pw.print("null");
-        				else {
-        					for (j = 0; j < contextWords.size(); j++) {
-	        					pw.print(contextWords.get(j)+",");
-    	    				}
-	        			}
-        				pw.print("	");
-        				if (contextMainVerbs.size() == 0)
-        					pw.print("null");
-        				else {
-        					for (j = 0; j < contextMainVerbs.size(); j++) {
-        						pw.print(contextMainVerbs.get(j)+",");
-        					}
-        				}
-        				pw.print("	");
-        				if (contextMainVerbPairs.size() == 0)
-        					pw.print("null");
-        				else {
-	        				for (j = 0; j < contextMainVerbPairs.size(); j++) {
-        						pw.print(contextMainVerbPairs.get(j)+",");
-        					}
-        				}
-        				pw.print("\n");
-        				pw.flush();
-        			}
-
-			    }
-			}
+    				// print out features and instance pair
+    				int j = 0;
+    				pw.print(wp.word_one + "-" + wp.word_two+ "	");
+    				if (labelled) {
+    					pw.print(label + "	");
+    				}
+    				for (j = 0; j < verbs.size(); j++) {
+    					pw.print(verbs.get(j)+",");
+    				}
+    				pw.print("	");
+    				
+    				if (verbPhrases.size() == 0)
+    					pw.print("null");
+    				else {
+      				for (j = 0; j < verbPhrases.size(); j++) {
+    						pw.print(verbPhrases.get(j)+",");
+    					}
+    				}
+    				pw.print("	");
+    				String subj_vi = null;
+    				String subj_vj = null;
+    				String obj_vi = null;
+    				String obj_vj = null;
+    				for (j = 0; j < verbArguments.size(); j++) {
+    					String arg = verbArguments.get(j);
+    					if (arg.contains("Subject")) {
+								if (arg.contains(wp.word_one)) {
+									String[] subject = arg.split("=",2);
+									subj_vi = subject[1];
+								}
+								else if (arg.contains(wp.word_two)) {
+									String[] subject = arg.split("=",2);
+									subj_vj = subject[1];
+								}
+						  } else if (arg.contains("Object")) {
+								if (arg.contains(wp.word_one)) {
+									String[] object = arg.split("=",2);
+									obj_vi = object[1];
+								}
+								if (arg.contains(wp.word_two)) {
+									String[] object = arg.split("=",2);
+									obj_vj = object[1];	
+								}
+							}
+    				}
+    				pw.print(subj_vi + "	");
+    				pw.print(obj_vi + "	");
+    				pw.print(subj_vj + "	");
+    				pw.print(obj_vj + "	");
+    				if (verbsAndArgumentPairs.size() == 0)
+    					pw.print("null");
+    				else {
+	    				for (j = 0; j < verbsAndArgumentPairs.size(); j++) {
+      					pw.print(verbsAndArgumentPairs.get(j)+",");
+    					}
+    				}
+    				pw.print("	");
+    				if (contextWords.size() == 0)
+    					pw.print("null");
+    				else {
+    					for (j = 0; j < contextWords.size(); j++) {
+      					pw.print(contextWords.get(j)+",");
+	    				}
+      			}
+    				pw.print("	");
+    				if (contextMainVerbs.size() == 0)
+    					pw.print("null");
+    				else {
+    					for (j = 0; j < contextMainVerbs.size(); j++) {
+    						pw.print(contextMainVerbs.get(j)+",");
+    					}
+    				}
+    				pw.print("	");
+    				if (contextMainVerbPairs.size() == 0)
+    					pw.print("null");
+    				else {
+      				for (j = 0; j < contextMainVerbPairs.size(); j++) {
+    						pw.print(contextMainVerbPairs.get(j)+",");
+    					}
+    				}
+    				pw.print("\n");
+    				pw.flush();
+    			}
+	      }
+		  }
 			scanner.close();
 		} catch (Exception e) {
   		e.printStackTrace();
