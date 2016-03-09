@@ -637,6 +637,7 @@ public class generate_features {
 		String outputFile = null;
     int causal = 0;
     int non_causal = 0;
+    int instance = 0;
 		if (args[0].equals("l")) {
 			//System.out.println()
 			labelled = true;
@@ -647,6 +648,7 @@ public class generate_features {
 			outputFile = args[1];
 		}
 		pw = new PrintWriter(new File(outputFile));
+    PrintWriter refPw = new PrintWriter(new File("pair_ref.txt"));
   	// The main class for users to run, train, and test the part of speech tagger.
   	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
   	//MaxentTagger tagger = new MaxentTagger(modelFile);
@@ -663,8 +665,8 @@ public class generate_features {
 		  	if (!verb_pair.equals("\n")) {
     			String[] verbs_pair = verb_pair.split(" ",3);
     			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],0,0);
-          scanner.nextLine();
-          scanner.nextLine();
+          //scanner.nextLine();
+          //scanner.nextLine();
     			int sentences = Integer.parseInt(scanner.nextLine());
     			//System.out.println(sentences);
     			for (int i = 0; i < sentences; i++) {
@@ -677,6 +679,7 @@ public class generate_features {
                 non_causal++;
     				}
     				String s = scanner.nextLine();
+            instance++;
     				//System.out.println(s);
     				List<HasWord> sent = Sentence.toWordList(s);
     				List<TaggedWord> tSentence = tagger.tagSentence(sent);
@@ -691,7 +694,8 @@ public class generate_features {
 
     				// print out features and instance pair
     				int j = 0;
-    				pw.print(wp.word_one + "-" + wp.word_two+ "	");
+            refPw.println(instance + " " + wp.word_one + "-" + wp.word_two);
+    				pw.print(instance);
     				if (labelled) {
     					pw.print(label + "	");
     				}
@@ -780,5 +784,6 @@ public class generate_features {
   	}
     System.out.println("Causal Examples="+causal+",Non Causal Examples="+non_causal);
   	pw.close();
+    refPw.close();
   }
 }
