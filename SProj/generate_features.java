@@ -638,7 +638,7 @@ public class generate_features {
     int causal = 0;
     int non_causal = 0;
     int instance = 0;
-		if (args[0].equals("l")) {
+		if (args.length == 3) {
 			//System.out.println()
 			labelled = true;
 			inputFile = args[1];
@@ -648,7 +648,12 @@ public class generate_features {
 			outputFile = args[1];
 		}
 		pw = new PrintWriter(new File(outputFile));
-    PrintWriter refPw = new PrintWriter(new File("pair_ref.txt"));
+    PrintWriter refPw = null;
+    if (labelled) {
+      refPw = new PrintWriter(new File("pair_ref_labelled.txt"));
+    } else {
+      refPw = new PrintWriter(new File("pair_ref_labelled.txt"));
+    }
   	// The main class for users to run, train, and test the part of speech tagger.
   	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
   	//MaxentTagger tagger = new MaxentTagger(modelFile);
@@ -665,8 +670,9 @@ public class generate_features {
 		  	if (!verb_pair.equals("\n")) {
     			String[] verbs_pair = verb_pair.split(" ",3);
     			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],0,0);
-          //scanner.nextLine();
-          //scanner.nextLine();
+          scanner.nextLine();
+          scanner.nextLine();
+          
     			int sentences = Integer.parseInt(scanner.nextLine());
     			//System.out.println(sentences);
     			for (int i = 0; i < sentences; i++) {
