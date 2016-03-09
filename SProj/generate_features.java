@@ -701,7 +701,7 @@ public class generate_features {
     				// print out features and instance pair
     				int j = 0;
             refPw.println(instance + " " + wp.word_one + "-" + wp.word_two);
-    				pw.print(instance);
+    				pw.print(instance + " ");
     				if (labelled) {
     					pw.print(label + "	");
     				}
@@ -781,6 +781,7 @@ public class generate_features {
     				}
     				pw.print("\n");
     				pw.flush();
+            refPw.flush();
     			}
 	      }
 		  }
