@@ -1,0 +1,432 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Scanner;
+import java.util.Set;
+
+import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.DocumentPreprocessor;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+
+//=================================================================================
+//=================================================================================
+
+public class create_explicit_corpus {
+  static List<File>       all_files         = new ArrayList<>();
+  static List<Word_Pair>  all_verb_pairs    = new ArrayList<>();
+  static List<Word_Count> doc_count_words   = new ArrayList<>();
+  static List<String>     phrases_all       = Arrays.asList("because", "for this reason", "for that reason", "consequently", "as a consequence of", "as a result of", "but", "in short", "in other words", "whereas", "on the other hand", "nevertheless", "nonetheless", "in spite of", "in contrast", "however", "even", "though", "despite the fact", "conversely", "although");
+  static List<Integer>    length_phrases_all= Arrays.asList(1, 3, 3, 1, 4, 4, 1, 2, 3, 1, 4, 1, 1, 3, 2, 1, 1, 1, 3, 1, 1);
+  static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
+  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/test";
+  static String           modelFile         = "models\\english-left3words-distsim.tagger";
+  static PrintWriter      pw                = null;
+  static int              totalNumWords     = 0;
+  static int              totalSentences    = 0;
+
+  //=================================================================================
+  //=================================================================================
+
+  /**
+   * Find a Word_Count from the doc_count_words List
+   * @param  wc1 [The Word_Count which is being searched for]
+   * @return     [The Word_Count from the List, if it exists, or null]
+   */
+  public static Word_Count find_WC(Word_Count wc1) {
+    for (Word_Count wc2 : doc_count_words) {
+      if (wc1.equals(wc2)) {
+        return wc2;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a Word_Pair from the all_verb_pairs List
+   * @param  wp1 [The Word_Pair which is being searched for]
+   * @return     [The Word_Pair from the List, if it exists, or null]
+   */
+  public static Word_Pair find_WP(Word_Pair wp1) {
+    for (Word_Pair wp2 : all_verb_pairs) {
+      if (wp1.equals(wp2)) {
+        return wp2;
+      }
+    }
+    return null;
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static String removePunctuation(String content) {
+    content = content.replace(".", " ");
+    content = content.replace(",", " ");
+    content = content.replace("?", " ");
+    content = content.replace("!", " ");
+    content = content.replace(";", " ");
+    content = content.replace("-", " ");
+    content = content.replace("_", " ");
+    content = content.replace("`", " ");
+    content = content.replace("=", " ");
+    content = content.replace("@", " ");
+    content = content.replace("#", " ");
+    content = content.replace("$", " ");
+    content = content.replace("%", " ");
+    content = content.replace("^", " ");
+    content = content.replace("&", " ");
+    content = content.replace("*", " ");
+    content = content.replace("(", " ");
+    content = content.replace(")", " ");
+    content = content.replace("[", " ");
+    content = content.replace("]", " ");
+    content = content.replace("{", " ");
+    content = content.replace("}", " ");
+    content = content.replace("\'", " ");
+    content = content.replace("\"", " ");
+    return content;
+  }
+
+  public static String docWordCounter(int id) throws Exception {
+    String content = new Scanner(all_files.get(id)).useDelimiter("\\Z").next().toLowerCase();
+    content = removePunctuation(content);
+
+    // Increment document counter for words. Add new words to doc_count_words.
+    List<String> words = Arrays.asList(content.split("\\s+"));
+    Set<String> set = new HashSet<String>(words);
+
+    for (String s : set) {
+      Word_Count temp = new Word_Count(s);
+      int index = doc_count_words.indexOf(temp);
+      if (index != -1) {
+        doc_count_words.get(index).documentIncrement();
+      } else {
+        doc_count_words.add(temp);
+        temp.actualIncrement(-1);
+      }
+    }
+
+    // Increment actual counter for words.
+    for (String s : words) {
+      Word_Count wc = new Word_Count(s);
+      Word_Count search = find_WC(wc);
+
+      if (search != null) {
+        search.actualIncrement();
+      }
+    }
+
+    return content;
+  }
+
+  //=================================================================================
+  //=================================================================================
+  
+  /**
+   * Find locations of unambiguous discourse markers (both causal and non-causal) in the given sentence.
+   * @param tSentence [The input sentence to the function]
+   * @return          [List of locations of discourse markers along with their lengths]
+   */
+  public static List<Pair> findPhraseLocations(List<TaggedWord> tSentence) {
+    List<Pair> phraseLocations = new ArrayList<>();
+
+    // Go through each tagged word in the sentence.
+    for (int i = 0; i < tSentence.size(); i++) {
+
+      for (int k = 0; k < phrases_all.size(); k++) {
+        List<String> phrase = Arrays.asList(phrases_all.get(k).split("\\s+"));
+
+        // Find the position of the (non-)causal phrase.
+        boolean found = false;
+        if (tSentence.get(i).word().toLowerCase().equals(phrase.get(0))) {
+          found = true;
+          if (phrase.size() > 1) {
+            for (int j = 1; j < phrase.size(); j++) {
+              if (tSentence.size() <= i+j || !tSentence.get(i+j).word().toLowerCase().equals(phrase.get(j))) {
+                found = false;
+                break;
+              }
+            }
+          }
+
+          if (found) {
+            Pair p = new Pair(i, length_phrases_all.get(k));
+            p.z = k;
+            phraseLocations.add(p);
+          }
+        }    
+      }
+    }
+
+    return phraseLocations;
+  }
+
+  /**
+   * Make pairs of verbs which appear before and after unambiguous discourse markers.
+   * @param  tSentence [The input sentence]
+   * @return           [A list of verb-verb pairs]
+   */
+  public static void findVerbPairs(List<TaggedWord> tSentence) {
+    List<Pair> phraseLocations = findPhraseLocations(tSentence);
+    int start = 0;
+    int end = 0;
+
+    for (int i = 0; i < phraseLocations.size(); i++) {
+      if (i == phraseLocations.size() - 1) {
+        end = tSentence.size();
+      } else {
+        end = phraseLocations.get(i+1).x;
+      }
+
+      List<String> verbsBefore = new ArrayList<>();
+      List<String> verbsAfter  = new ArrayList<>();
+
+      // Check for verbs occurring before the unambiguous discourse marker.
+      for (int j = start; j < phraseLocations.get(i).x; j++) {
+        if (tSentence.get(j).tag().startsWith("VB")) {
+          verbsBefore.add(tSentence.get(j).word());
+
+          // Printing
+          if (tSentence.get(j).tag().equals("VB")) {
+            pw.println("\tTAG_BEFORE: " + tSentence.get(j).tag() + " \tWORD: " + tSentence.get(j).word());  
+          } else {
+            pw.println("\tTAG_BEFORE: " + tSentence.get(j).tag() + "\tWORD: " + tSentence.get(j).word());  
+          }
+        }
+      }
+
+      // Check for verbs occurring after the unambiguous discourse marker.
+      for (int j = phraseLocations.get(i).x+phraseLocations.get(i).y; j < end; j++) {
+        if (tSentence.get(j).tag().startsWith("VB")) {
+          verbsAfter.add(tSentence.get(j).word());
+          
+          // Printing
+          if (tSentence.get(j).tag().equals("VB")) {
+            pw.println("\tTAG_AFTER : " + tSentence.get(j).tag() + " \tWORD: " + tSentence.get(j).word());  
+          } else {
+            pw.println("\tTAG_AFTER : " + tSentence.get(j).tag() + "\tWORD: " + tSentence.get(j).word());  
+          }
+        }
+      }
+
+      start = phraseLocations.get(i).x + phraseLocations.get(i).y;
+
+      // If verbs exist both before and after the discourse marker, form all possible pairs of them.
+      for (String s1 : verbsBefore) {
+        for (String s2 : verbsAfter) {
+
+          // if the verbs are different
+          if (!s1.toLowerCase().equals(s2.toLowerCase())) {
+            Word_Pair wp = new Word_Pair(s1, s2);
+            Word_Pair search = find_WP(wp);
+
+            if (search != null) {
+              search.actualIncrement();
+            } else {
+              all_verb_pairs.add(wp);
+              search = wp;
+            }
+
+            search.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
+            int z = phraseLocations.get(i).z;
+            if (z < 6) {
+              search.sentences_tags.add("causal");
+
+              // Pair(1, 0) means that the second word in the Word_Pair is the cause, and the first is the effect
+              if (z == 0 || z == 4 || z == 5) { // because, as a consequence of, as a result of
+                if (s1.toLowerCase().equals(search.word_one)) {
+                  search.sentences_event_roles.add(new Pair(1, 0));
+                } else {
+                  search.sentences_event_roles.add(new Pair(0, 1));
+                }
+              } else {
+                if (s1.toLowerCase().equals(search.word_one)) {
+                  search.sentences_event_roles.add(new Pair(0, 1));
+                } else {
+                  search.sentences_event_roles.add(new Pair(1, 0));
+                }
+              }
+            } else {
+              search.sentences_tags.add("non-causal");
+              search.sentences_event_roles.add(new Pair(-1, -1));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  static void iterateFiles(File[] files) {
+    for (File file : files) {
+      if (file.isDirectory()) {
+        iterateFiles(file.listFiles());
+      } else if (file.isFile()) {
+        if (file.getPath().endsWith(".txt")) {
+          all_files.add(file);
+        }
+      }
+    }
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static void main(String[] args) throws Exception {
+    pw = new PrintWriter(new OutputStreamWriter(System.out, "utf-8"));
+    
+    // Get list of all files which have to be parsed in order to construct the (non-)Causal verb-pairs.
+    File[] files = null;
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) 
+      files = new File(dirName).listFiles();
+    else
+      files = new File(uDirName).listFiles();
+    iterateFiles(files);
+
+    // The main class for users to run, train, and test the part of speech tagger.
+    // http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
+    MaxentTagger tagger = new MaxentTagger(modelFile);
+
+    // A fast, rule-based tokenizer implementation, which produces Penn Treebank style tokenization of English text.
+    // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
+    TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
+
+    // Go through each file in the list.
+    for (int id = 0; id < all_files.size(); id++) {
+
+      // Print each file's name.
+      String fileName = all_files.get(id).getPath();
+      pw.print("\n***\n" + fileName + "\n***\n");
+
+      // Check for occurrences for the (non-)causal strings in the current document, increment the occurrence counter for use in IDF function.
+      // Find out which (non-)causal string to check for in the current document
+      String content = docWordCounter(id);
+
+      // Open the file.
+      BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "utf-8"));
+      
+      // Produces a list of sentences from the document.
+      // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/DocumentPreprocessor.html
+      DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(r);
+      // DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(new StringReader(content));
+      documentPreprocessor.setTokenizerFactory(ptbTokenizerFactory);
+
+      // Go through each sentence in the document.
+      for (List<HasWord> sentence : documentPreprocessor) {
+        totalSentences++;
+
+        // Print the sentence
+        String sentenceString = Sentence.listToString(sentence, false).toLowerCase();
+        pw.println(sentenceString);
+
+        // Tag each sentence, producing a list of tagged words.
+        List<TaggedWord> tSentence = tagger.tagSentence(sentence);
+
+        // Print the tagged sentence.
+        pw.println(Sentence.listToString(tSentence, false));
+
+        // Make a backup of all_verb_pairs so we can check for differences and increment document count.
+        List<Word_Pair> oldList = new ArrayList<>();
+        List<Integer> oldActualCounts = new ArrayList<>();
+        for (Word_Pair wp : all_verb_pairs) {
+          oldList.add(wp);
+          int i = wp.actualCount;
+          oldActualCounts.add(i);
+        }
+
+        // Find pairs of verbs before and after the unambiguous discourse markers.
+        findVerbPairs(tSentence);
+
+        // Incrementing the document count for the pairs.
+        for (int i = 0; i < oldList.size(); i++) {
+          if (oldList.get(i).actualCount != oldActualCounts.get(i)) {
+            oldList.get(i).documentIncrement();
+          }
+        }
+
+        pw.println("\n");
+      }
+    }
+
+    // Total number of words.
+    totalNumWords = 0;
+    ////////////////////////////////////////////////////////////////////
+
+    // Printing the Inverse Document Frequency Count
+    pw.print("DOCUMENT     ACTUAL     WORD\n");
+    Collections.sort(doc_count_words);
+    if (doc_count_words.get(0).word.equals("")) {doc_count_words.remove(0);}
+    for (int i = 0; i < doc_count_words.size(); i++) {
+      pw.println(doc_count_words.get(i).print());
+    }
+    pw.print("\n\n");
+
+    // Printing the Verb Pairs.
+    Collections.sort(all_verb_pairs);
+    pw.print("Verb Pairs\n");
+    for (Word_Pair wp : all_verb_pairs) {
+      pw.println(wp.print());
+    }
+
+    // Printing a sample IDF.
+    // pw.print("\nIDF\n\t");
+    // IDF(all_verb_pairs.get(13));
+
+    // Testing a max function call.
+    // pw.println("MAX = " + Double.toString(max(all_verb_pairs.get(3))));
+
+    pw.close();
+
+    // Output the Words to a file called count_words.txt;
+    pw = new PrintWriter(new File("count_words.txt"));
+
+    for (Word_Count wc : doc_count_words) {
+      totalNumWords += wc.actualCount;
+    }
+    pw.println(totalNumWords);
+    pw.println(totalSentences);
+
+    for (int i = 0; i < doc_count_words.size(); i++) {
+      pw.print(doc_count_words.get(i).prettyPrint());
+      if (i != doc_count_words.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+
+    // Output the Verb-Verb pairs to a file called count_verb_verb.txt;
+    pw = new PrintWriter(new File("count_verb_verb.txt"));
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      pw.print(all_verb_pairs.get(i).print());
+      if (i != all_verb_pairs.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+    
+    // Output the Verb-Verb pairs to a file called input_features_tagged.txt;
+    pw = new PrintWriter(new File("input_features_tagged.txt"));
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      pw.print(all_verb_pairs.get(i).printWithSentences());
+    }
+    pw.close();
+  }
+}

@@ -69,6 +69,16 @@ public class background_knowledge {
     return wp_list;
   }
 
+  public static Word_Pair find_WP(Word_Pair wp1) {
+    for (Word_Pair wp2 : all_verb_pairs) {
+      if (wp1.equals(wp2)) {
+        return wp2;
+      }
+    }
+
+    return null;
+  }
+
   //=================================================================================
   //=================================================================================
 
@@ -77,6 +87,7 @@ public class background_knowledge {
     double two = idf(wp.word_two);
     double three = idf(wp);
 
+  	// Word doesn't exist.
     if (one == -1 || two == -1) {return -1;}
     return one * two * three;
   }
@@ -98,6 +109,8 @@ public class background_knowledge {
 
   public static double P(String word) {
     Word_Count wc = find_WC(word);
+
+  	// Word doesn't exist.
     if (wc == null) {return -1;}
     return ((double)wc.actualCount) / ((double)totalNumWords);
   }
@@ -109,6 +122,8 @@ public class background_knowledge {
   public static double PMI(Word_Pair wp) {
   	double word_one_p = P(wp.word_one);
   	double word_two_p = P(wp.word_two);
+
+  	// Word doesn't exist.
   	if (word_one_p == -1 || word_two_p == -1) {return -1;}
     return Math.log(P(wp) / (word_one_p * word_two_p));
   }
@@ -118,9 +133,15 @@ public class background_knowledge {
 
   public static double CD(Word_Pair wp) {
   	double _pmi = PMI(wp);
+  	// System.out.println("pmi = " + Double.toString(_pmi));
   	double _idf = IDF(wp);
+  	// System.out.println("idf = " + Double.toString(_idf));
+  	double _max = max(wp);
+  	// System.out.println("max = " + Double.toString(_max));
+  	
+  	// Word doesn't exist.
   	if (_pmi == -1 || _idf == -1) {return -1;}
-    return _pmi * max(wp) * _idf;
+    return _pmi * _max * _idf;
   }
 
   //=================================================================================
@@ -148,8 +169,8 @@ public class background_knowledge {
     double max_vi_vk = max_helper(vi_vk);
     double max_vj_vk = max_helper(vj_vk);
 
-    double val1 = p_vi_vj / (max_vi_vk - p_vi_vj - epsilon);
-    double val2 = p_vi_vj / (max_vj_vk - p_vi_vj - epsilon);
+    double val1 = p_vi_vj / (max_vi_vk - p_vi_vj + epsilon);
+    double val2 = p_vi_vj / (max_vj_vk - p_vi_vj + epsilon);
 
     return Math.max(val1, val2);
   }
@@ -160,11 +181,13 @@ public class background_knowledge {
  	public static double ECA(Word_Pair wp) {
  		double factor = 1.0 / all_verb_pairs.size();
  		double cd = CD(wp);
+
+  	// Word doesn't exist.
  		if (cd == -1) {return -1;}
 
  		double sum = 0.0;
- 		for (int i = 0; i < wp.sentences.size(); i++) {
- 			sum += C_i(i);
+ 		for (int i = 0; i < wp.causal.size(); i++) {
+ 			sum += C_i(wp, i);
  		}
 
  		return factor * cd * sum;
@@ -173,8 +196,8 @@ public class background_knowledge {
   //=================================================================================
   //=================================================================================
 
- 	public static double C_i(int index) {
- 		return 0;
+ 	public static double C_i(Word_Pair wp, int i) {
+ 		return wp.causal.get(i) / wp.noncausal.get(i);
  	}
  
 	//=================================================================================
@@ -229,6 +252,25 @@ public class background_knowledge {
     			all_verb_pairs.add(wp);
     		}
     	}
+
+    	scanner = new Scanner(new File("..\\Mallet\\data.mallet"));
+    	while (scanner.hasNextLine()) {
+    		String pair = scanner.next();
+    		String[] pair2 = pair.split("-");
+    		Word_Pair wp = new Word_Pair(pair2[0], pair2[1]);
+
+    		scanner.next();
+    		Double causal = scanner.nextDouble();
+    		scanner.next();
+    		Double noncausal = scanner.nextDouble();
+
+    		Word_Pair search = find_WP(wp);
+        if (search == null) {
+        	continue;
+        }
+        search.causal.add(causal);
+        search.noncausal.add(noncausal);
+    	}
     } catch (Exception e) {
     	e.printStackTrace();
     }
@@ -245,6 +287,9 @@ public class background_knowledge {
 
   	for (Word_Pair wp : all_verb_pairs) {
   		System.out.println(wp.print());
+  		System.out.println("sentences = " + Integer.toString(wp.sentences.size()));
+  		System.out.println("causal    = " + Integer.toString(wp.causal.size()));
+  		System.out.println("noncausal = " + Integer.toString(wp.noncausal.size()));
   		double temp = ECA(wp);
 			if (temp != -1) {
 				System.out.println("ECA = " + Double.toString(temp));
