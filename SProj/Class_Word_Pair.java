@@ -8,6 +8,9 @@ class Word_Pair implements Comparable<Word_Pair> {
   public String       word_two;
   public List<String> sentences;
   public List<String> sentences_tags;
+  public List<Pair>   sentences_event_roles;
+  public List<Double> causal;
+  public List<Double> noncausal;
 
   public Word_Pair(String w1, String w2) {
     w1 = w1.toLowerCase();
@@ -20,10 +23,13 @@ class Word_Pair implements Comparable<Word_Pair> {
       word_two = w1;
     }
 
-    actualCount     = 1;
-    documentCount   = 1;
-    sentences       = new ArrayList<>();
-    sentences_tags  = new ArrayList<>();
+    actualCount           = 1;
+    documentCount         = 1;
+    sentences             = new ArrayList<>();
+    sentences_tags        = new ArrayList<>();
+    sentences_event_roles = new ArrayList<>();
+    causal                = new ArrayList<>();
+    noncausal             = new ArrayList<>();
   }
 
   public Word_Pair(String w1, String w2, int _document, int _actual) {
@@ -37,10 +43,13 @@ class Word_Pair implements Comparable<Word_Pair> {
       word_two = w1;
     }
 
-    actualCount     = _actual;
-    documentCount   = _document;
-    sentences       = new ArrayList<>();
-    sentences_tags  = new ArrayList<>();
+    actualCount           = _actual;
+    documentCount         = _document;
+    sentences             = new ArrayList<>();
+    sentences_tags        = new ArrayList<>();
+    sentences_event_roles = new ArrayList<>();
+    causal                = new ArrayList<>();
+    noncausal             = new ArrayList<>();
   }
 
   public String toString() {
@@ -59,6 +68,7 @@ class Word_Pair implements Comparable<Word_Pair> {
     if (sentences_tags.size() > 0) {
       for (int i = 0; i < sentences.size(); i++) {
         temp += sentences_tags.get(i) + "\n";
+        temp += Integer.toString(sentences_event_roles.get(i).x) + " " + Integer.toString(sentences_event_roles.get(i).y) + "\n";
         temp += sentences.get(i) + "\n";      
       }
     } else {

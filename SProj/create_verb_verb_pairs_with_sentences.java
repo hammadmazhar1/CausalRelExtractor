@@ -141,7 +141,7 @@ public class create_verb_verb_pairs_with_sentences {
       for (List<HasWord> sentence : documentPreprocessor) {
         // Print the sentence
         String content = Sentence.listToString(sentence, false).toLowerCase();
-        content = create_corpus.removePunctuation(content);
+        content = create_explicit_corpus.removePunctuation(content);
         
         List<String> words = Arrays.asList(content.split("\\s+"));
         sentence.clear();

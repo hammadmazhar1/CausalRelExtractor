@@ -654,6 +654,7 @@ public class generate_features {
     } else {
       refPw = new PrintWriter(new File("pair_ref_labelled.txt"));
     }
+
   	// The main class for users to run, train, and test the part of speech tagger.
   	// http://www-nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/tagger/maxent/MaxentTagger.html
   	//MaxentTagger tagger = new MaxentTagger(modelFile);
@@ -661,7 +662,8 @@ public class generate_features {
   	// A fast, rule-based tokenizer implementation, which produces Penn Treebank style tokenization of English text.
   	// http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/PTBTokenizer.html
   	//TokenizerFactory<CoreLabel> ptbTokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "untokenizable=noneKeep");
-  	// Open the file provided in command line args
+  	
+    // Open the file provided in command line args
   	try {
   		Scanner scanner = new Scanner(new File(inputFile));
   		while (scanner.hasNextLine()) {
@@ -683,6 +685,12 @@ public class generate_features {
                 causal++;
               else
                 non_causal++;
+
+              ////////////////////////////////////////////////////////////////////////////
+              // Line containing 2 ints, denoting which words (one or two) in the pair are
+              // the Cause and Effect in this sentence.
+              scanner.nextLine();
+              //////////////////////////////////////////////////////////////////////////
     				}
     				String s = scanner.nextLine();
             instance++;
