@@ -2839,8 +2839,7 @@
 2839 plans
 2840 deploy
 2841 back
-2842 in
-place
+2842 in_place
 2843 conference
 2844 said
 2845 seeking
@@ -3502,8 +3501,7 @@ place
 3501 involved
 3502 search
 3503 flee
-3504 coup
-d'etat
+3504 coup_d'etat
 3505 appeared
 3506 find
 3507 said
@@ -4030,8 +4028,7 @@ d'etat
 4028 boasts
 4029 expected
 4030 committed
-4031 Desert
-Shield
+4031 Desert_Shield
 4032 said
 4033 invaded
 4034 disputes

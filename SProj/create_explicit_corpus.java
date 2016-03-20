@@ -34,8 +34,8 @@ public class create_explicit_corpus {
   static List<Word_Count> doc_count_words   = new ArrayList<>();
   static List<String>     phrases_all       = Arrays.asList("because", "for this reason", "for that reason", "consequently", "as a consequence of", "as a result of", "but", "in short", "in other words", "whereas", "on the other hand", "nevertheless", "nonetheless", "in spite of", "in contrast", "however", "even", "though", "despite the fact", "conversely", "although");
   static List<Integer>    length_phrases_all= Arrays.asList(1, 3, 3, 1, 4, 4, 1, 2, 3, 1, 4, 1, 1, 3, 2, 1, 1, 1, 3, 1, 1);
-  static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
-  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/test";
+  static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\train";
+  static String           uDirName           = System.getProperty("user.dir") + "/textfiles/train";
   static String           modelFile         = "models\\english-left3words-distsim.tagger";
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;

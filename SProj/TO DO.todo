@@ -16,7 +16,7 @@ Categories of Verb-Verb Pairs (Saad): @due(16-03-15 00:00)
   ☐ Splitting ranked list of verbs into thirds, assigning labels.
 
 Identification of Causal Semantics of Verbs (Hammad): @due(16-03-20 00:00)
-  ☐ Linguistic Definition of Events, Section 3.3.1, Page 50,  Build supervised classifier
+  ✔ Linguistic Definition of Events, Section 3.3.1, Page 50,  Build supervised classifier @done (16-03-20 15:16)
   ☐ Semantic Classes of Events, Section 3.3.2, Page 52, Code Procedure 3.1
 
 Identifying Causality in Verb-Verb Pairs: @due(16-04-04 00:00)

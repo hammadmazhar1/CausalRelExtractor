@@ -16,7 +16,7 @@ import edu.mit.jwi.morph.*;
 public class TimeMLParser{
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			System.out.println("Usage: java parse_tml <directory> <outputFilename>");
+			System.out.println("Usage: java TimeMLParser <directory> <outputFilename>");
 			return;
 		}
 		
@@ -80,7 +80,7 @@ public class TimeMLParser{
 				NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
 				for (int i = 0; i < nodeList.getLength(); i++) {
 					Node nNode = nodeList.item(i);
-					System.out.println("\nCurrent Element :" + nNode.getNodeName());
+					
 					if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 						Element eElement = (Element)nNode;
 						String cls = eElement.getAttribute("class");
@@ -88,6 +88,9 @@ public class TimeMLParser{
 						String word = eElement.getTextContent();
 						String eventID = eElement.getAttribute("eid");
 						TimeMLEvent evt = eventMap.get(eventID);
+						if (word.contains("\n")){
+							word = word.replace("\n","_");
+						}
 						POS pos = POS.VERB;
 
 						if (evt != null) {
@@ -117,7 +120,11 @@ public class TimeMLParser{
 							String affix = word.replace(stem,"");
 							if (affix.equals("")) {
 								affix = "null";
-							}
+							} else if (affix.endsWith("ing")) {
+    							affix = "ing";
+    						} else if (affix.endsWith("id")) {
+    							affix = "id";
+    						}
 							instance++;
 							
 							refPw.println(instance + " " + word);
@@ -146,7 +153,6 @@ public class TimeMLParser{
       						if (k == 0)
     								sense = iword.getSenseKey().toString();
       						synsets.add(iword.getSynset().getWord(1).toString());
-      						System.out.println(iword.getSynset().getWord(1).toString());
     						}
     					}
     					for (String synset : synsets) {
