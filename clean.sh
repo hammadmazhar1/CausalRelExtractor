@@ -5,8 +5,10 @@ echo "Clearing SProj Directory"
 rm *.class
 rm *.txt
 
+cd ..
 cd Mallet
-#import data into mallet data
+echo "Clearing Mallet Directory"
+
 rm *.txt
 rm *.classifier
 rm *.mallet
