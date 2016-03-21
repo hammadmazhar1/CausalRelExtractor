@@ -178,6 +178,11 @@ public class background_knowledge {
   //=================================================================================
   //=================================================================================
 
+  /**
+   * The goal of ECA is to combine the unsupervised causal dependency score (i.e., CD) 
+   * with the supervised score of instance I of belonging to the cause class than the 
+   * non-cause one (i.e., CI ).
+   */
  	public static double ECA(Word_Pair wp) {
  		double factor = 1.0 / all_verb_pairs.size();
  		double cd = CD(wp);
@@ -193,6 +198,48 @@ public class background_knowledge {
  		return factor * cd * sum;
  	}
 
+	//=================================================================================
+  //=================================================================================
+
+ 	/**
+ 	 * ICA handles the problem of training data sparseness
+ 	 */
+ 	public static double ICA(Word_Pair wp) {
+ 		double factor = 1.0 / all_verb_pairs.size();
+ 		double cd = CD(wp);
+
+  	// Word doesn't exist.
+ 		if (cd == -1) {return -1;}
+
+ 		double sum = 0.0;
+ 		for (int i = 0; i < wp.causal.size(); i++) {
+ 			sum += C_i(wp, i) * ERM(wp, i);
+ 		}
+
+ 		return factor * cd * sum;	
+ 	}
+
+  //=================================================================================
+  //=================================================================================
+
+ 	/**
+ 	 * BCA combines ECA and ICA
+ 	 */
+ 	public static double BCA(Word_Pair wp) {
+ 		double factor = 1.0 / all_verb_pairs.size();
+ 		double cd = CD(wp);
+
+  	// Word doesn't exist.
+ 		if (cd == -1) {return -1;}
+
+ 		double sum = 0.0;
+ 		for (int i = 0; i < wp.causal.size(); i++) {
+ 			sum += C_i(wp, i) * (1.0 + ERM(wp, i));
+ 		}
+
+ 		return factor * cd * sum;
+ 	}
+
   //=================================================================================
   //=================================================================================
 
@@ -200,101 +247,133 @@ public class background_knowledge {
  		return wp.causal.get(i) / wp.noncausal.get(i);
  	}
  
+ 	public static double ERM(Word_Pair wp, int i) {
+ 		Word_Count w1 = find_WC(wp.word_one);
+ 		Word_Count w2 = find_WC(wp.word_two);
+
+ 		// Word doesn't exist.
+ 		if (w1 == null || w2 == null) {return -1;}
+ 		double one = S(w1, 0) + S(w2, 1);
+ 		double two = S(w1, 1) + S(w2, 0);
+
+ 		return -1.0 * Math.max(one, two);
+ 	}
+
+ 	public static double S(Word_Count w, int label) {
+ 		if (label == 0) {
+ 			return 0.0;
+ 		} else {
+ 			return 0.0;
+ 		}
+ 	}
+
 	//=================================================================================
   //=================================================================================
 
-  static void iterateFiles(File[] files) {
-    for (File file : files) {
-      if (file.isDirectory()) {
-        iterateFiles(file.listFiles());
-      } else if (file.isFile()) {
-        if (file.getPath().endsWith(".txt")) {
-          all_files.add(file);
-        }
-      }
+ 	public static void populateWords() throws Exception {
+ 		Scanner scanner = new Scanner(new File("count_words.txt"));
+    totalNumWords = scanner.nextInt();
+    totalSentences = scanner.nextInt();
+
+    while (scanner.hasNextLine()) {
+      int i1 = scanner.nextInt();
+      int i2 = scanner.nextInt();
+      String s = scanner.next();
+      Word_Count wc = new Word_Count(s, i1, i2);
+      doc_count_words.add(wc);
     }
-  }
+    scanner.close();
+ 	}
+
+ 	public static void populateVerbVerbPairs() throws Exception {
+ 		Scanner scanner = new Scanner(new File("input_features.txt"));
+		while (scanner.hasNextLine()) {
+	  	String verb_pair = scanner.nextLine();
+	  	
+	  	if (!verb_pair.equals("\n")) {
+  			String[] verbs_pair = verb_pair.split(" ",3);
+  			int document = Integer.parseInt(scanner.nextLine());
+  			int actual = Integer.parseInt(scanner.nextLine());
+  			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],document,actual);
+  			int sentences = Integer.parseInt(scanner.nextLine());
+  			
+  			for (int i = 0; i < sentences; i++) {
+  				String s = scanner.nextLine();
+  				wp.sentences.add(s);
+  			}
+
+  			all_verb_pairs.add(wp);
+  		}
+  	}
+ 	}
+
+ 	public static void populateProbabilities() throws Exception {
+ 		Scanner scanner = new Scanner(new File("..\\Mallet\\data.mallet"));
+  	while (scanner.hasNextLine()) {
+  		String pair = scanner.next();
+  		String[] pair2 = pair.split("-");
+  		Word_Pair wp = new Word_Pair(pair2[0], pair2[1]);
+
+  		scanner.next();
+  		Double causal = scanner.nextDouble();
+  		scanner.next();
+  		Double noncausal = scanner.nextDouble();
+
+  		Word_Pair search = find_WP(wp);
+      if (search == null) {
+      	continue;
+      }
+      search.causal.add(causal);
+      search.noncausal.add(noncausal);
+  	}
+ 	}
+
+	//=================================================================================
+  //=================================================================================
+
+ 	public static void sortVerbVerbByScore() {
+ 		for (int i = 1; i < all_verb_pairs.size(); i++) {
+ 			int j = i;
+ 			while (j > 0 && all_verb_pairs.get(j).score > all_verb_pairs.get(j-1).score) {
+ 				Word_Pair temp = all_verb_pairs.get(j);
+ 				all_verb_pairs.set(j, all_verb_pairs.get(j-1));
+ 				all_verb_pairs.set(j-1, temp);
+ 				j--;
+ 			}
+ 		}
+ 	}
 
 	//=================================================================================
   //=================================================================================
 
 	public static void main(String[] args) {
 		try {
-			Scanner scanner = new Scanner(new File("count_words.txt"));
-      totalNumWords = scanner.nextInt();
-      totalSentences = scanner.nextInt();
-
-      while (scanner.hasNextLine()) {
-        int i1 = scanner.nextInt();
-        int i2 = scanner.nextInt();
-        String s = scanner.next();
-        Word_Count wc = new Word_Count(s, i1, i2);
-        doc_count_words.add(wc);
-      }
-      scanner.close();
-
-  		scanner = new Scanner(new File("input_features.txt"));
-  		while (scanner.hasNextLine()) {
-		  	String verb_pair = scanner.nextLine();
-		  	
-		  	if (!verb_pair.equals("\n")) {
-    			String[] verbs_pair = verb_pair.split(" ",3);
-    			int document = Integer.parseInt(scanner.nextLine());
-    			int actual = Integer.parseInt(scanner.nextLine());
-    			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],document,actual);
-    			int sentences = Integer.parseInt(scanner.nextLine());
-    			
-    			for (int i = 0; i < sentences; i++) {
-    				String s = scanner.nextLine();
-    				wp.sentences.add(s);
-    			}
-
-    			all_verb_pairs.add(wp);
-    		}
-    	}
-
-    	scanner = new Scanner(new File("..\\Mallet\\data.mallet"));
-    	while (scanner.hasNextLine()) {
-    		String pair = scanner.next();
-    		String[] pair2 = pair.split("-");
-    		Word_Pair wp = new Word_Pair(pair2[0], pair2[1]);
-
-    		scanner.next();
-    		Double causal = scanner.nextDouble();
-    		scanner.next();
-    		Double noncausal = scanner.nextDouble();
-
-    		Word_Pair search = find_WP(wp);
-        if (search == null) {
-        	continue;
-        }
-        search.causal.add(causal);
-        search.noncausal.add(noncausal);
-    	}
+    	populateWords();
+    	populateVerbVerbPairs();
+    	populateProbabilities();
     } catch (Exception e) {
     	e.printStackTrace();
     }
 
-    // Open the file which has to be analyzed.
-    File[] files = null;
-    if (System.getProperty("os.name").toLowerCase().contains("windows")) 
-      files = new File(dirName).listFiles();
-    else
-      files = new File(uDirName).listFiles();
-    iterateFiles(files);
-
   	Collections.sort(all_verb_pairs);
 
   	for (Word_Pair wp : all_verb_pairs) {
-  		System.out.println(wp.print());
-  		System.out.println("sentences = " + Integer.toString(wp.sentences.size()));
-  		System.out.println("causal    = " + Integer.toString(wp.causal.size()));
-  		System.out.println("noncausal = " + Integer.toString(wp.noncausal.size()));
+  		// System.out.println(wp.print());
+  		// System.out.println("sentences = " + Integer.toString(wp.sentences.size()));
+  		// System.out.println("causal    = " + Integer.toString(wp.causal.size()));
+  		// System.out.println("noncausal = " + Integer.toString(wp.noncausal.size()));
   		double temp = ECA(wp);
-			if (temp != -1) {
-				System.out.println("ECA = " + Double.toString(temp));
-			}
-			System.out.println("\n");
+  		wp.score = temp;
+			// if (temp != -1) {
+			// 	System.out.println("ECA = " + Double.toString(temp));
+			// }
+			// System.out.println("\n");
+  	}
+
+  	sortVerbVerbByScore();
+
+  	for (Word_Pair wp : all_verb_pairs) {
+  		System.out.println(wp.print() + "      = " + Double.toString(wp.score));
   	}
 	}
 }

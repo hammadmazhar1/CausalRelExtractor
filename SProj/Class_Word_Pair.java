@@ -11,6 +11,7 @@ class Word_Pair implements Comparable<Word_Pair> {
   public List<Pair>   sentences_event_roles;
   public List<Double> causal;
   public List<Double> noncausal;
+  public double       score;
 
   public Word_Pair(String w1, String w2) {
     w1 = w1.toLowerCase();
@@ -30,6 +31,7 @@ class Word_Pair implements Comparable<Word_Pair> {
     sentences_event_roles = new ArrayList<>();
     causal                = new ArrayList<>();
     noncausal             = new ArrayList<>();
+    score                 = 0;
   }
 
   public Word_Pair(String w1, String w2, int _document, int _actual) {
@@ -50,6 +52,7 @@ class Word_Pair implements Comparable<Word_Pair> {
     sentences_event_roles = new ArrayList<>();
     causal                = new ArrayList<>();
     noncausal             = new ArrayList<>();
+    score                 = 0;
   }
 
   public String toString() {

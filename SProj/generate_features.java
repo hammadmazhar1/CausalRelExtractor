@@ -652,7 +652,7 @@ public class generate_features {
     if (labelled) {
       refPw = new PrintWriter(new File("pair_ref_labelled.txt"));
     } else {
-      refPw = new PrintWriter(new File("pair_ref_labelled.txt"));
+      refPw = new PrintWriter(new File("pair_ref_test.txt"));
     }
 
   	// The main class for users to run, train, and test the part of speech tagger.

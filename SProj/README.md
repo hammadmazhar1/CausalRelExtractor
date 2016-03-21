@@ -30,10 +30,8 @@ splitter.cpp
 ------------
 * Helper file which took in a single text file containing many articles and outputted the separate articles to separate files.
 
-Class_Pair.java
-Class_Word_Count.java
-Class_Word_Pair.java
-----------------------
+Class_Pair.java, Class_Word_Count.java, Class_Word_Pair.java
+------------------------------------------------------------
 * Helper classes, contain the data structures used.
 
 create_explicit_corpus.java
