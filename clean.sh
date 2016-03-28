@@ -1,12 +1,15 @@
-#Delete .class and .txt files in SProj
 cd SProj
+
+#Delete .class and .txt files in SProj
 echo "Clearing SProj Directory"
 rm *.class
 rm *.txt
 
-#Delete .txt, .classifier and .mallet files in SProj
-cd ../Mallet
+cd ..
+cd Mallet
+	
 echo "Clearing Mallet Directory"
+
 rm *.txt
 rm *.classifier
 rm *.mallet

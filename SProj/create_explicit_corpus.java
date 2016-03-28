@@ -382,7 +382,7 @@ public class create_explicit_corpus {
    * @param  tSentence [The input sentence]
    * @return           [A list of verb-verb pairs]
    */
-  public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence) {
+  public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence,String origSent) {
     List<Word_Pair> returnValue = new ArrayList<>();
     List<Pair> phraseLocations = findPhraseLocations(tSentence);
     int start = 0;
@@ -444,7 +444,7 @@ public class create_explicit_corpus {
               search = wp;
             }
 
-            search.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
+            search.sentences.add(origSent);
             int z = phraseLocations.get(i).z;
             if (z < 6) {
               search.sentences_tags.add("causal");
@@ -534,7 +534,7 @@ public class create_explicit_corpus {
       // Go through each sentence in the document.
       for (List<HasWord> sentence : documentPreprocessor) {
         totalSentences++;
-
+        String origSent = Sentence.listToString(sentence, false);
         String content = Sentence.listToString(sentence, false).toLowerCase();
         content = removePunctuation(content);
         
@@ -564,7 +564,7 @@ public class create_explicit_corpus {
         }
 
         // Find pairs of verbs before and after the unambiguous discourse markers.
-        findVerbPairs(tSentence);
+        findVerbPairs(tSentence, origSent);
 
         // Incrementing the document count for the pairs.
         for (int i = 0; i < oldList.size(); i++) {
@@ -682,7 +682,8 @@ public class create_explicit_corpus {
       if (wp.word_one.equals("")) {
         continue;
       } else {
-        pw.println(wp.printWithSentences());
+        pw.print(wp.printWithSentences());
+        pw.flush();
       }
     }
     pw.close();

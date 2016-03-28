@@ -414,7 +414,9 @@ public class generate_features {
     boolean obj_vj = false;
   	List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
   	for (TypedDependency td : tdl) {
+  		System.out.println("gov=" + td.dep().word());
   		if (td.gov().value().equals(wp.word_one) || td.gov().value().equals(wp.word_two)) {
+
   			String relation = td.reln().getShortName();
   			if (relation.contains("obj")){
   				System.out.println(relation);
@@ -429,6 +431,7 @@ public class generate_features {
   				if (lemma == null) {
   					lemma = td.dep().value();
   				}
+  				System.out.println("dep="+td.dep().value());
   				String entry = "Object_" + td.gov().value() +"=" + td.dep().value() + "," + lemma + "," + posTag;
   				IIndexWord idxWord = dict.getIndexWord(td.dep().value(), POS.NOUN);
   				if (idxWord != null){
@@ -690,33 +693,33 @@ public class generate_features {
 		  	if (!verb_pair.equals("\n")) {
     			String[] verbs_pair = verb_pair.split(" ",3);
     			Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[2],0,0);
-          scanner.nextLine();
-          scanner.nextLine();
+          		scanner.nextLine();
+          		scanner.nextLine();
           
     			int sentences = Integer.parseInt(scanner.nextLine());
     			//System.out.println(sentences);
     			for (int i = 0; i < sentences; i++) {
     				String label = null;
-            Integer one = -1;
-            Integer two = -1;
+            		Integer one = -1;
+            		Integer two = -1;
     				if (labelled) {
     					label = scanner.nextLine();
-              if (label.equals("causal"))
-                causal++;
-              else
-                non_causal++;
+              			if (label.equals("causal"))
+                			causal++;
+              			else
+                			non_causal++;
 
-              ////////////////////////////////////////////////////////////////////////////
-              // Line containing 2 ints, denoting which words (one or two) in the pair are
-              // the Cause and Effect in this sentence.
-              // scanner.nextLine();
-              // scanner.nextLine();
-              one = Integer.parseInt(scanner.nextLine());
-              two = Integer.parseInt(scanner.nextLine());
-              //////////////////////////////////////////////////////////////////////////
+		              ////////////////////////////////////////////////////////////////////////////
+		              // Line containing 2 ints, denoting which words (one or two) in the pair are
+		              // the Cause and Effect in this sentence.
+		              // scanner.nextLine();
+		              // scanner.nextLine();
+		              one = Integer.parseInt(scanner.nextLine());
+		              two = Integer.parseInt(scanner.nextLine());
+		              //////////////////////////////////////////////////////////////////////////
     				}
     				String s = scanner.nextLine();
-            instance++;
+            		instance++;
     				//System.out.println(s);
     				List<HasWord> sent = Sentence.toWordList(s);
     				List<TaggedWord> tSentence = tagger.tagSentence(sent);
@@ -731,7 +734,7 @@ public class generate_features {
 
     				// print out features and instance pair
     				int j = 0;
-            refPw.println(instance + " " + wp.word_one + "-" + wp.word_two);
+            		refPw.println(instance + " " + wp.word_one + "-" + wp.word_two);
     				pw.print(instance + " ");
     				if (labelled) {
     					pw.print(label + "	");
@@ -744,7 +747,7 @@ public class generate_features {
     				if (verbPhrases.size() == 0)
     					pw.print("null");
     				else {
-      				for (j = 0; j < verbPhrases.size(); j++) {
+      					for (j = 0; j < verbPhrases.size(); j++) {
     						pw.print(verbPhrases.get(j)+",");
     					}
     				}
@@ -756,24 +759,24 @@ public class generate_features {
     				for (j = 0; j < verbArguments.size(); j++) {
     					String arg = verbArguments.get(j);
     					if (arg.contains("Subject")) {
-								if (arg.contains(wp.word_one)) {
-									String[] subject = arg.split("=",2);
-									subj_vi = subject[1];
-								}
-								else if (arg.contains(wp.word_two)) {
-									String[] subject = arg.split("=",2);
-									subj_vj = subject[1];
-								}
-						  } else if (arg.contains("Object")) {
-								if (arg.contains(wp.word_one)) {
-									String[] object = arg.split("=",2);
-									obj_vi = object[1];
-								}
-								if (arg.contains(wp.word_two)) {
-									String[] object = arg.split("=",2);
-									obj_vj = object[1];	
-								}
+							if (arg.contains(wp.word_one)) {
+								String[] subject = arg.split("=",2);
+								subj_vi = subject[1];
 							}
+							else if (arg.contains(wp.word_two)) {
+								String[] subject = arg.split("=",2);
+								subj_vj = subject[1];
+							}
+						} else if (arg.contains("Object")) {
+							if (arg.contains(wp.word_one)) {
+								String[] object = arg.split("=",2);
+								obj_vi = object[1];
+							}
+							if (arg.contains(wp.word_two)) {
+								String[] object = arg.split("=",2);
+								obj_vj = object[1];	
+							}
+						}
     				}
     				pw.print(subj_vi + "	");
     				pw.print(obj_vi + "	");
@@ -783,7 +786,7 @@ public class generate_features {
     					pw.print("null");
     				else {
 	    				for (j = 0; j < verbsAndArgumentPairs.size(); j++) {
-      					pw.print(verbsAndArgumentPairs.get(j)+",");
+      						pw.print(verbsAndArgumentPairs.get(j)+",");
     					}
     				}
     				pw.print("	");
@@ -791,9 +794,9 @@ public class generate_features {
     					pw.print("null");
     				else {
     					for (j = 0; j < contextWords.size(); j++) {
-      					pw.print(contextWords.get(j)+",");
+      						pw.print(contextWords.get(j)+",");
 	    				}
-      			}
+      				}
     				pw.print("	");
     				if (contextMainVerbs.size() == 0)
     					pw.print("null");
@@ -806,51 +809,50 @@ public class generate_features {
     				if (contextMainVerbPairs.size() == 0)
     					pw.print("null");
     				else {
-      				for (j = 0; j < contextMainVerbPairs.size(); j++) {
+      					for (j = 0; j < contextMainVerbPairs.size(); j++) {
     						pw.print(contextMainVerbPairs.get(j)+",");
     					}
     				}
     				pw.print("\n");
     				pw.flush();
-            refPw.flush();
-
-            // Cause-Effect Stuff
-            if (label.equals("causal")) {
-              pw2.print(instance + " ");
-              if (one == 0) {
-                pw2.print("cause" + " "); 
-              } else {
-                pw2.print("effect" + "  ");
-              }
-              for (j = 0; j < word_one_stuff.size(); j++) {
-                pw2.print(word_one_stuff.get(j)+",");
-              }
-              pw2.print(" ");
-              pw2.print(subj_vi + " ");
-              pw2.print(obj_vi + "  ");
-              pw2.print("\n");
-              
-              pw2.print(instance + " ");
-              if (two == 0) {
-                pw2.print("cause" + " "); 
-              } else {
-                pw2.print("effect" + "  ");
-              }
-              for (j = 0; j < word_two_stuff.size(); j++) {
-                pw2.print(word_two_stuff.get(j)+",");
-              }
-              pw2.print(" ");
-              pw2.print(subj_vj + " ");
-              pw2.print(obj_vj + "  ");
-              pw2.print("\n");
-              
-              pw2.flush();
-            }
+            		refPw.flush();
+            		// Cause-Effect Stuff
+            		if (labelled) {
+            			if (label.equals("causal")) {
+              				pw2.print(instance + " ");
+              				if (one == 0) {
+                				pw2.print("cause" + " "); 
+              				} else {
+                				pw2.print("effect" + "  ");
+              				}
+              				for (j = 0; j < word_one_stuff.size(); j++) {
+                				pw2.print(word_one_stuff.get(j)+",");
+              				}
+              				pw2.print(" ");
+              				pw2.print(subj_vi + " ");
+              				pw2.print(obj_vi + "  ");
+              				pw2.print("\n");              
+              				pw2.print(instance + " ");
+			            	if (two == 0) {
+            			    pw2.print("cause" + " "); 
+              				} else {
+                				pw2.print("effect" + "  ");
+              				}
+              				for (j = 0; j < word_two_stuff.size(); j++) {
+                				pw2.print(word_two_stuff.get(j)+",");
+              				}
+              				pw2.print(" ");
+              				pw2.print(subj_vj + " ");
+              				pw2.print(obj_vj + "  ");
+              				pw2.print("\n");              
+              				pw2.flush();
+						}
+            		}
     			}
-	      }
-		  }
-			scanner.close();
-		} catch (Exception e) {
+	      	}
+		}
+		scanner.close();
+	} catch (Exception e) {
   		e.printStackTrace();
   	}
     System.out.println("Causal Examples="+causal+",Non Causal Examples="+non_causal);

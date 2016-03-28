@@ -4,11 +4,11 @@ javac -cp ".:lib/*" *.java
 
 #create explicit corpus
 echo "Creating explicit corpus"
-java -cp ".:lib/*" create_explicit_corpus
+java -cp ".:lib/*" create_explicit_corpus > blah.txt
 
 #create features for training linguistic verb-verb causal classifier
 echo "generating training data for linguistic causal classifier"
-java -cp ".:lib/*" generate_features l input_features_tagged.txt output_features_tagged.txt
+java -cp ".:lib/*" generate_features l input_features_tagged.txt output_features_tagged.txt >text.txt
 
 #create verb-verb pairs from documents to be analysed
 echo "Analysing test documents"
