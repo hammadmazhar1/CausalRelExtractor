@@ -71,7 +71,7 @@ class Word_Pair implements Comparable<Word_Pair> {
     if (sentences_tags.size() > 0) {
       for (int i = 0; i < sentences.size(); i++) {
         temp += sentences_tags.get(i) + "\n";
-        temp += Integer.toString(sentences_event_roles.get(i).x) + " " + Integer.toString(sentences_event_roles.get(i).y) + "\n";
+        temp += Integer.toString(sentences_event_roles.get(i).x) + "\n" + Integer.toString(sentences_event_roles.get(i).y) + "\n";
         temp += sentences.get(i) + "\n";      
       }
     } else {

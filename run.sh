@@ -1,5 +1,8 @@
 cd SProj
 
+#clear all files
+./clean.sh
+
 #run java code in SProj folder
 echo "Running SProj code"
 ./run.sh
