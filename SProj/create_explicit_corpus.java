@@ -15,10 +15,11 @@ import java.util.regex.Pattern;
 import java.util.Scanner;
 import java.util.Set;
 
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.ling.TaggedWord;
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
@@ -40,6 +41,205 @@ public class create_explicit_corpus {
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
   static int              totalSentences    = 0;
+
+  //=================================================================================
+  //=================================================================================
+
+  public static Word_Count find_WC(String word) {
+    for (Word_Count wc : doc_count_words) {
+      if (wc.word.equals(word)) {
+        return wc;
+      }
+    }
+
+    return null;
+  }
+
+  public static List<Word_Pair> find_WP(String word) {
+    List<Word_Pair> wp_list = new ArrayList<>();
+
+    for (Word_Pair wp : all_verb_pairs) {
+      if (wp.word_one.equals(word) || wp.word_two.equals(word)) {
+        wp_list.add(wp);
+      }
+    }
+
+    return wp_list;
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static double IDF(Word_Pair wp) {
+    double one = idf(wp.word_one);
+    double two = idf(wp.word_two);
+    double three = idf(wp);
+
+    // Word doesn't exist.
+    if (one == -1 || two == -1) {return -1;}
+    return one * two * three;
+  }
+
+  public static double idf(String word) {
+    Word_Count wc = find_WC(word);
+    if (wc == null) {return -1;}
+    double ans = 1.0 + wc.documentCount;
+    return all_files.size() / ans;
+  }
+
+  public static double idf(Word_Pair wp) {
+    double ans = 1.0 + wp.documentCount;
+    return all_files.size() / ans;
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static double P(String word) {
+    Word_Count wc = find_WC(word);
+
+    // Word doesn't exist.
+    if (wc == null) {return -1;}
+    return ((double)wc.actualCount) / ((double)totalNumWords);
+  }
+
+  public static double P(Word_Pair wp) {
+    return ((double)wp.actualCount) / ((double)totalSentences);
+  }
+
+  public static double PMI(Word_Pair wp) {
+    double word_one_p = P(wp.word_one);
+    double word_two_p = P(wp.word_two);
+
+    // Word doesn't exist.
+    if (word_one_p == -1 || word_two_p == -1) {return -1;}
+    return Math.log(P(wp) / (word_one_p * word_two_p));
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static double CD(Word_Pair wp) {
+    double _pmi = PMI(wp);
+    // System.out.println("pmi = " + Double.toString(_pmi));
+    double _idf = IDF(wp);
+    // System.out.println("idf = " + Double.toString(_idf));
+    double _max = max(wp);
+    // System.out.println("max = " + Double.toString(_max));
+    
+    // Word doesn't exist.
+    if (_pmi == -1 || _idf == -1) {return -1;}
+    return _pmi * _max * _idf;
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static double max_helper(List<Word_Pair> wp_list) {
+    double max = 0.0;
+
+    for (Word_Pair wp : wp_list) {
+      if (P(wp) > max) {
+        max = P(wp);
+      }
+    }
+
+    return max;
+  }
+
+  public static double max(Word_Pair wp) {
+    double p_vi_vj = P(wp);
+    double epsilon = 0.01;
+
+    List<Word_Pair> vi_vk = find_WP(wp.word_one);
+    List<Word_Pair> vj_vk = find_WP(wp.word_two);
+
+    double max_vi_vk = max_helper(vi_vk);
+    double max_vj_vk = max_helper(vj_vk);
+
+    double val1 = p_vi_vj / (max_vi_vk - p_vi_vj + epsilon);
+    double val2 = p_vi_vj / (max_vj_vk - p_vi_vj + epsilon);
+
+    return Math.max(val1, val2);
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static double PS_I(Word_Pair wp, List<TaggedWord> tSentence, List<Pair> phraseLocations) {
+    /*
+    / Assuming one (non-)causal phrase in a sentence
+    */
+    int pos_i = 1;  // distance of verb from phrase
+    int pos_j = 1;  // distance of verb from phrase
+    int C_p   = 0;  // number of verbs before the phrase
+    int C_q   = 0;  // number of verbs after the phrase
+
+    for (int i = 0; i < phraseLocations.get(0).x; i++) {
+      TaggedWord tw = tSentence.get(i);
+      if (tw.tag().startsWith("VB")) {
+          C_p++;
+
+          if (tw.word().equals(wp.word_one) || tw.word().equals(wp.word_two)) {
+            pos_i = 1;
+          } else {
+            pos_i++;
+          }
+      }
+    }
+
+    for (int i = tSentence.size()-1; i > phraseLocations.get(0).x + phraseLocations.get(0).y; i--) {
+      TaggedWord tw = tSentence.get(i);
+      if (tw.tag().startsWith("VB")) {
+        C_q++;
+
+        if (tw.word().equals(wp.word_one) || tw.word().equals(wp.word_two)) {
+          pos_j = 1;
+        } else {
+          pos_j++;
+        }
+      }
+    }
+
+    double returnValue = -Math.log((pos_i + pos_j) / (2.0 * (C_p + C_q)));
+    return returnValue;
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static Word_Pair f_I(List<TaggedWord> tSentence) {
+    List<Pair> phraseLocations = findPhraseLocations(tSentence);
+    List<Word_Count> verbs = new ArrayList<>();
+
+    // If sentence doesn't contain a (non-)causal phrase, return null.
+    if (phraseLocations.size() == 0) {
+      return null;  
+    }
+    
+    List<Word_Pair> verb_verb_pairs = findVerbPairs(tSentence);
+    double maxValue = -99999999.0;
+    Word_Pair returnValue = null;
+
+    for (Word_Pair wp : verb_verb_pairs) {
+      double value  = 0.0;
+      double _CD    = CD(wp);
+      double _PS_I  = PS_I(wp, tSentence, phraseLocations); 
+
+      if (P(wp) == 0.0) {
+        value = _PS_I;
+      } else {
+        value = _CD * _PS_I;
+      }
+
+      if (value > maxValue) {
+        maxValue = value;
+        returnValue = wp;
+      }
+    }
+
+    return returnValue;
+  }
 
   //=================================================================================
   //=================================================================================
@@ -182,7 +382,8 @@ public class create_explicit_corpus {
    * @param  tSentence [The input sentence]
    * @return           [A list of verb-verb pairs]
    */
-  public static void findVerbPairs(List<TaggedWord> tSentence) {
+  public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence) {
+    List<Word_Pair> returnValue = new ArrayList<>();
     List<Pair> phraseLocations = findPhraseLocations(tSentence);
     int start = 0;
     int end = 0;
@@ -266,10 +467,12 @@ public class create_explicit_corpus {
               search.sentences_tags.add("non-causal");
               search.sentences_event_roles.add(new Pair(-1, -1));
             }
+            returnValue.add(search);
           }
         }
       }
     }
+    return returnValue;
   }
 
   //=================================================================================
@@ -318,7 +521,7 @@ public class create_explicit_corpus {
 
       // Check for occurrences for the (non-)causal strings in the current document, increment the occurrence counter for use in IDF function.
       // Find out which (non-)causal string to check for in the current document
-      String content = docWordCounter(id);
+      docWordCounter(id);
 
       // Open the file.
       BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "utf-8"));
@@ -326,16 +529,24 @@ public class create_explicit_corpus {
       // Produces a list of sentences from the document.
       // http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/process/DocumentPreprocessor.html
       DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(r);
-      // DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(new StringReader(content));
       documentPreprocessor.setTokenizerFactory(ptbTokenizerFactory);
 
       // Go through each sentence in the document.
       for (List<HasWord> sentence : documentPreprocessor) {
         totalSentences++;
 
+        String content = Sentence.listToString(sentence, false).toLowerCase();
+        content = removePunctuation(content);
+        
+        List<String> words = Arrays.asList(content.split("\\s+"));
+        sentence.clear();
+        for (String word : words) {
+          sentence.add(new Word(word));
+        }
+
         // Print the sentence
-        String sentenceString = Sentence.listToString(sentence, false).toLowerCase();
-        pw.println(sentenceString);
+        content = Sentence.listToString(sentence, false).toLowerCase();
+        pw.println(content);
 
         // Tag each sentence, producing a list of tagged words.
         List<TaggedWord> tSentence = tagger.tagSentence(sentence);
@@ -369,29 +580,10 @@ public class create_explicit_corpus {
     // Total number of words.
     totalNumWords = 0;
     ////////////////////////////////////////////////////////////////////
-
-    // Printing the Inverse Document Frequency Count
-    pw.print("DOCUMENT     ACTUAL     WORD\n");
+    
     Collections.sort(doc_count_words);
-    if (doc_count_words.get(0).word.equals("")) {doc_count_words.remove(0);}
-    for (int i = 0; i < doc_count_words.size(); i++) {
-      pw.println(doc_count_words.get(i).print());
-    }
-    pw.print("\n\n");
-
-    // Printing the Verb Pairs.
     Collections.sort(all_verb_pairs);
-    pw.print("Verb Pairs\n");
-    for (Word_Pair wp : all_verb_pairs) {
-      pw.println(wp.print());
-    }
-
-    // Printing a sample IDF.
-    // pw.print("\nIDF\n\t");
-    // IDF(all_verb_pairs.get(13));
-
-    // Testing a max function call.
-    // pw.println("MAX = " + Double.toString(max(all_verb_pairs.get(3))));
+    if (doc_count_words.get(0).word.equals("")) {doc_count_words.remove(0);}
 
     pw.close();
 
@@ -422,10 +614,76 @@ public class create_explicit_corpus {
     }
     pw.close();
     
+    // pw = new PrintWriter(new File("input_features_tagged_all.txt"));
+    // for (int i = 0; i < all_verb_pairs.size(); i++) {
+    //   if (all_verb_pairs.get(i).word_one.equals("")) {
+    //     continue;
+    //   } else {
+    //     pw.println(all_verb_pairs.get(i).toString());
+    //   }
+    // }
+    // pw.close();
+    // pw = new PrintWriter(new File("input_features_tagged_all2.txt"));
+    // for (int i = 0; i < all_verb_pairs.size(); i++) {
+    //   if (all_verb_pairs.get(i).word_one.equals("")) {
+    //     continue;
+    //   } else {
+    //     pw.println(all_verb_pairs.get(i).printWithSentences());
+    //   }
+    // }
+    // pw.close();
+
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
+    all_verb_pairs.clear();
+    List<Word_Pair> temp = new ArrayList<>();
+
+    // Go through each file in the list.
+    for (int id = 0; id < all_files.size(); id++) {
+      String fileName = all_files.get(id).getPath();
+      BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "utf-8"));
+      
+      DocumentPreprocessor documentPreprocessor = new DocumentPreprocessor(r);
+      documentPreprocessor.setTokenizerFactory(ptbTokenizerFactory);
+
+      for (List<HasWord> sentence : documentPreprocessor) {
+        String content = Sentence.listToString(sentence, false).toLowerCase();
+        content = removePunctuation(content);
+        
+        List<String> words = Arrays.asList(content.split("\\s+"));
+        sentence.clear();
+        for (String word : words) {
+          sentence.add(new Word(word));
+        }
+
+        List<TaggedWord> tSentence = tagger.tagSentence(sentence);
+        
+        // Find the most dependant pair.
+        Word_Pair wp = f_I(tSentence);
+        if (wp != null) {
+          temp.add(wp);
+        }
+      }
+    }
+
+    Collections.sort(temp);
+    
+    // pw = new PrintWriter(new File("input_features_tagged_reduced.txt"));
+    // for (int i = 0; i < temp.size(); i++) {
+    //   pw.println(temp.get(i).toString());
+    // }
+    // pw.close();
+
     // Output the Verb-Verb pairs to a file called input_features_tagged.txt;
     pw = new PrintWriter(new File("input_features_tagged.txt"));
-    for (int i = 0; i < all_verb_pairs.size(); i++) {
-      pw.print(all_verb_pairs.get(i).printWithSentences());
+    for (int i = 0; i < temp.size(); i++) {
+      Word_Pair wp = temp.get(i);
+      if (wp.word_one.equals("")) {
+        continue;
+      } else {
+        pw.println(wp.printWithSentences());
+      }
     }
     pw.close();
   }

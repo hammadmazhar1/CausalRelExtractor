@@ -51,6 +51,8 @@ public class generate_features {
   static LexicalizedParser lp 				      = LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
   static MaxentTagger     tagger            = new MaxentTagger("models\\english-left3words-distsim.tagger");;
 
+  static List<String>     word_one_stuff    = new ArrayList<>();
+  static List<String>     word_two_stuff    = new ArrayList<>();
   //=================================================================================
   //=================================================================================
 
@@ -191,6 +193,8 @@ public class generate_features {
    */
   static List<String> feature_verbs(Word_Pair wp, List<TaggedWord> tSentence) {
     List<String> returnValue = new ArrayList<>();
+    word_one_stuff.clear();
+    word_two_stuff.clear();
     
     // construct the URL to the Wordnet dictionary directory
     String wnhome = System.getProperty("user.dir");
@@ -232,6 +236,12 @@ public class generate_features {
     	}
     }
     
+    // for Cause-Effect thing
+    int size = returnValue.size();
+    for (int i = 0; i < size; i++) {
+      word_one_stuff.add(returnValue.get(i));
+    }
+
     // look at stems for word 2
     strings = stemmer.findStems(wp.word_two,POS.VERB);
     if (strings.isEmpty()) 
@@ -257,6 +267,11 @@ public class generate_features {
     		returnValue.add(word.getSenseKey().toString());
 	   	}
     }
+
+    for (int i = size; i < returnValue.size(); i++) {
+      word_two_stuff.add(returnValue.get(i));
+    }
+
     dict.close();
   	return returnValue;
   }
@@ -392,6 +407,7 @@ public class generate_features {
     IDictionary dict = new Dictionary(url);
     try {dict.open();}
     catch(IOException e){e.printStackTrace();}
+
     boolean subj_vi = false;
     boolean subj_vj = false;
     boolean obj_vi = false;
@@ -649,8 +665,10 @@ public class generate_features {
 		}
 		pw = new PrintWriter(new File(outputFile));
     PrintWriter refPw = null;
+    PrintWriter pw2 = null;
     if (labelled) {
       refPw = new PrintWriter(new File("pair_ref_labelled.txt"));
+      pw2 = new PrintWriter(new File("output_features_tagged_cause_effect.txt"));
     } else {
       refPw = new PrintWriter(new File("pair_ref_test.txt"));
     }
@@ -679,6 +697,8 @@ public class generate_features {
     			//System.out.println(sentences);
     			for (int i = 0; i < sentences; i++) {
     				String label = null;
+            Integer one = -1;
+            Integer two = -1;
     				if (labelled) {
     					label = scanner.nextLine();
               if (label.equals("causal"))
@@ -689,7 +709,10 @@ public class generate_features {
               ////////////////////////////////////////////////////////////////////////////
               // Line containing 2 ints, denoting which words (one or two) in the pair are
               // the Cause and Effect in this sentence.
-              scanner.nextLine();
+              // scanner.nextLine();
+              // scanner.nextLine();
+              one = Integer.parseInt(scanner.nextLine());
+              two = Integer.parseInt(scanner.nextLine());
               //////////////////////////////////////////////////////////////////////////
     				}
     				String s = scanner.nextLine();
@@ -790,6 +813,39 @@ public class generate_features {
     				pw.print("\n");
     				pw.flush();
             refPw.flush();
+
+            // Cause-Effect Stuff
+            if (label.equals("causal")) {
+              pw2.print(instance + " ");
+              if (one == 0) {
+                pw2.print("cause" + " "); 
+              } else {
+                pw2.print("effect" + "  ");
+              }
+              for (j = 0; j < word_one_stuff.size(); j++) {
+                pw2.print(word_one_stuff.get(j)+",");
+              }
+              pw2.print(" ");
+              pw2.print(subj_vi + " ");
+              pw2.print(obj_vi + "  ");
+              pw2.print("\n");
+              
+              pw2.print(instance + " ");
+              if (two == 0) {
+                pw2.print("cause" + " "); 
+              } else {
+                pw2.print("effect" + "  ");
+              }
+              for (j = 0; j < word_two_stuff.size(); j++) {
+                pw2.print(word_two_stuff.get(j)+",");
+              }
+              pw2.print(" ");
+              pw2.print(subj_vj + " ");
+              pw2.print(obj_vj + "  ");
+              pw2.print("\n");
+              
+              pw2.flush();
+            }
     			}
 	      }
 		  }
