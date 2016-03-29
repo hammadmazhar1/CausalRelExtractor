@@ -217,7 +217,7 @@ public class create_explicit_corpus {
       return null;  
     }
     
-    List<Word_Pair> verb_verb_pairs = findVerbPairs(tSentence);
+    List<Word_Pair> verb_verb_pairs = findVerbPairs(tSentence, "", false);
     double maxValue = -99999999.0;
     Word_Pair returnValue = null;
 
@@ -382,7 +382,7 @@ public class create_explicit_corpus {
    * @param  tSentence [The input sentence]
    * @return           [A list of verb-verb pairs]
    */
-  public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence,String origSent) {
+  public static List<Word_Pair> findVerbPairs(List<TaggedWord> tSentence, String origSent, boolean flag) {
     List<Word_Pair> returnValue = new ArrayList<>();
     List<Pair> phraseLocations = findPhraseLocations(tSentence);
     int start = 0;
@@ -438,36 +438,44 @@ public class create_explicit_corpus {
             Word_Pair search = find_WP(wp);
 
             if (search != null) {
-              search.actualIncrement();
+              returnValue.add(search);
             } else {
-              all_verb_pairs.add(wp);
-              search = wp;
+              returnValue.add(wp);
             }
 
-            search.sentences.add(origSent);
-            int z = phraseLocations.get(i).z;
-            if (z < 6) {
-              search.sentences_tags.add("causal");
+            if (flag) {
+              if (search != null) {
+                search.actualIncrement();
+              } else {
+                all_verb_pairs.add(wp);
+                search = wp;
+              }
 
-              // Pair(1, 0) means that the second word in the Word_Pair is the cause, and the first is the effect
-              if (z == 0 || z == 4 || z == 5) { // because, as a consequence of, as a result of
-                if (s1.toLowerCase().equals(search.word_one)) {
-                  search.sentences_event_roles.add(new Pair(1, 0));
+              search.sentences.add(origSent);
+
+              int z = phraseLocations.get(i).z;
+              if (z < 6) {
+                search.sentences_tags.add("causal");
+
+                // Pair(1, 0) means that the second word in the Word_Pair is the cause, and the first is the effect
+                if (z == 0 || z == 4 || z == 5) { // because, as a consequence of, as a result of
+                  if (s1.toLowerCase().equals(search.word_one)) {
+                    search.sentences_event_roles.add(new Pair(1, 0));
+                  } else {
+                    search.sentences_event_roles.add(new Pair(0, 1));
+                  }
                 } else {
-                  search.sentences_event_roles.add(new Pair(0, 1));
+                  if (s1.toLowerCase().equals(search.word_one)) {
+                    search.sentences_event_roles.add(new Pair(0, 1));
+                  } else {
+                    search.sentences_event_roles.add(new Pair(1, 0));
+                  }
                 }
               } else {
-                if (s1.toLowerCase().equals(search.word_one)) {
-                  search.sentences_event_roles.add(new Pair(0, 1));
-                } else {
-                  search.sentences_event_roles.add(new Pair(1, 0));
-                }
+                search.sentences_tags.add("non-causal");
+                search.sentences_event_roles.add(new Pair(-1, -1));
               }
-            } else {
-              search.sentences_tags.add("non-causal");
-              search.sentences_event_roles.add(new Pair(-1, -1));
             }
-            returnValue.add(search);
           }
         }
       }
@@ -535,6 +543,7 @@ public class create_explicit_corpus {
       for (List<HasWord> sentence : documentPreprocessor) {
         totalSentences++;
         String origSent = Sentence.listToString(sentence, false);
+        System.out.println(origSent + "\n");
         String content = Sentence.listToString(sentence, false).toLowerCase();
         content = removePunctuation(content);
         
@@ -564,7 +573,7 @@ public class create_explicit_corpus {
         }
 
         // Find pairs of verbs before and after the unambiguous discourse markers.
-        findVerbPairs(tSentence, origSent);
+        findVerbPairs(tSentence, origSent, true);
 
         // Incrementing the document count for the pairs.
         for (int i = 0; i < oldList.size(); i++) {
@@ -636,7 +645,6 @@ public class create_explicit_corpus {
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 
-    all_verb_pairs.clear();
     List<Word_Pair> temp = new ArrayList<>();
 
     // Go through each file in the list.

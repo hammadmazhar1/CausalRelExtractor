@@ -50,6 +50,7 @@ public class generate_features {
   static DependencyParser parser 			      = DependencyParser.loadFromModelFile("models\\english_UD.gz");
   static LexicalizedParser lp 				      = LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
   static MaxentTagger     tagger            = new MaxentTagger("models\\english-left3words-distsim.tagger");;
+  static String           dictPath          = "";
 
   static List<String>     word_one_stuff    = new ArrayList<>();
   static List<String>     word_two_stuff    = new ArrayList<>();
@@ -198,7 +199,7 @@ public class generate_features {
     
     // construct the URL to the Wordnet dictionary directory
     String wnhome = System.getProperty("user.dir");
-    String path = wnhome + File.separator + "dict";
+    String path = wnhome + File.separator + dictPath;
     URL url = null;
     try{ url = new URL("file", null, path); } 
     catch(MalformedURLException e){ e.printStackTrace(); }
@@ -306,7 +307,7 @@ public class generate_features {
   static List<String> feature_verbPhrases(Word_Pair wp, List<TaggedWord> tSentence) {
     // form wordnet url
     String wnhome = System.getProperty("user.dir");
-    String path = wnhome + File.separator + "dict";
+    String path = wnhome + File.separator + dictPath;
     URL url = null;
     try{ url = new URL("file", null, path); } 
     catch(MalformedURLException e){ e.printStackTrace(); }
@@ -397,7 +398,7 @@ public class generate_features {
   	List<String> returnValue = new ArrayList<String>();
   	GrammaticalStructure gs = parser.predict(tSentence);
   	String wnhome = System.getProperty("user.dir");
-    String path = wnhome + File.separator + "dict";
+    String path = wnhome + File.separator + dictPath;
     URL url = null;
     try{ url = new URL("file", null, path); } 
     catch(MalformedURLException e){ e.printStackTrace(); }
@@ -579,7 +580,7 @@ public class generate_features {
    */
   static List<TaggedWord> feature_contextMainVerbs(List<TaggedWord> minContext) {
   	String wnhome = System.getProperty("user.dir");
-    String path = wnhome + File.separator + "dict";
+    String path = wnhome + File.separator + dictPath;
     URL url = null;
     try{ url = new URL("file", null, path); } 
     catch(MalformedURLException e){ e.printStackTrace(); }
@@ -674,6 +675,12 @@ public class generate_features {
       pw2 = new PrintWriter(new File("output_features_tagged_cause_effect.txt"));
     } else {
       refPw = new PrintWriter(new File("pair_ref_test.txt"));
+    }
+
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+      dictPath = "dict_win";
+    } else {
+      dictPath = "dict";
     }
 
   	// The main class for users to run, train, and test the part of speech tagger.
