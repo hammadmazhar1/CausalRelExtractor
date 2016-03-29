@@ -52,7 +52,7 @@ public class create_verb_verb_pairs_with_sentences {
   //=================================================================================
   //=================================================================================
   
-  public static void findVerbPairs(List<TaggedWord> tSentence) {
+  public static void findVerbPairs(List<TaggedWord> tSentence, String origSent) {
     List<String> verbs = new ArrayList<>();
     
     // Check for verbs.
@@ -75,10 +75,10 @@ public class create_verb_verb_pairs_with_sentences {
 
           if (search != null) {
             search.actualIncrement();
-            search.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
+            search.sentences.add(origSent);
           } else {
             all_verb_pairs.add(wp);
-            wp.sentences.add(Sentence.listToString(tSentence, true).toLowerCase());
+            wp.sentences.add(origSent);
           }
         }
       }
@@ -139,7 +139,7 @@ public class create_verb_verb_pairs_with_sentences {
 
       // Go through each sentence in the document.
       for (List<HasWord> sentence : documentPreprocessor) {
-        // Print the sentence
+        String origSent = Sentence.listToString(sentence, false);
         String content = Sentence.listToString(sentence, false).toLowerCase();
         content = create_explicit_corpus.removePunctuation(content);
         
@@ -150,8 +150,7 @@ public class create_verb_verb_pairs_with_sentences {
         }
 
         content = Sentence.listToString(sentence, false).toLowerCase();
-        pw.println(content);
-
+        
         // Tag each sentence, producing a list of tagged words.
         List<TaggedWord> tSentence = tagger.tagSentence(sentence);
 
@@ -168,7 +167,7 @@ public class create_verb_verb_pairs_with_sentences {
         }
 
         // Find pairs of verbs before and after the unambiguous discourse markers.
-        findVerbPairs(tSentence);
+        findVerbPairs(tSentence, origSent);
 
         // Incrementing the document count for the pairs.
         for (int i = 0; i < oldList.size(); i++) {
