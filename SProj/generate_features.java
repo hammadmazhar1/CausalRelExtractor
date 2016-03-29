@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Scanner;
@@ -47,8 +48,8 @@ public class generate_features {
   static PrintWriter      pw                = null;
   static int              totalNumWords     = 0;
   static int              totalSentences    = 0;
-  static DependencyParser parser 			      = DependencyParser.loadFromModelFile("models\\english_UD.gz");
-  static LexicalizedParser lp 				      = LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
+  static DependencyParser parser 			= DependencyParser.loadFromModelFile("models\\english_UD.gz");
+  static LexicalizedParser lp 				= LexicalizedParser.loadModel("models\\englishPCFG.ser.gz");
   static MaxentTagger     tagger            = new MaxentTagger("models\\english-left3words-distsim.tagger");;
   static String           dictPath          = "";
 
@@ -413,69 +414,71 @@ public class generate_features {
     boolean subj_vj = false;
     boolean obj_vi = false;
     boolean obj_vj = false;
-  	List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
+  	List<TypedDependency> tdl = gs.typedDependenciesCCprocessed(true);
+  	//System.out.println(gs.toString());
   	for (TypedDependency td : tdl) {
-  		System.out.println("gov=" + td.dep().word());
-  		if (td.gov().value().equals(wp.word_one) || td.gov().value().equals(wp.word_two)) {
-
-  			String relation = td.reln().getShortName();
-  			if (relation.contains("obj")){
-  				System.out.println(relation);
-  				String posTag = null;
-  				for (TaggedWord t : tSentence) {
-  					if (t.value().equals(td.dep().value())){
-  						posTag = t.tag();
-  						break;
-  					}
-  				}
-  				String lemma = td.dep().lemma();
-  				if (lemma == null) {
-  					lemma = td.dep().value();
-  				}
-  				System.out.println("dep="+td.dep().value());
-  				String entry = "Object_" + td.gov().value() +"=" + td.dep().value() + "," + lemma + "," + posTag;
-  				IIndexWord idxWord = dict.getIndexWord(td.dep().value(), POS.NOUN);
-  				if (idxWord != null){
-  					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      					IWordID wordID = idxWord.getWordIDs().get(i);
-      					IWord iword = dict.getWord(wordID);
-      					entry = entry + "," + iword.getSenseKey().toString();
-    				}
-    			}
-    			if (entry.contains(wp.word_one))
-    				obj_vi = true;
-    			else
-    				obj_vj = true;
-    			returnValue.add(entry);
-  			} else if(relation.contains("subj")) {
-  				System.out.println(relation);
-  				String posTag = null;
-  				for (TaggedWord t : tSentence) {
-  					if (t.value().equals(td.dep().value())){
-  						posTag = t.tag();
-  						break;
-  					}
-  				}
-  				String lemma = td.dep().lemma();
-  				if (lemma == null) {
-  					lemma = td.dep().value();
-  				}
-  				String entry = "Subject_" + td.gov().value() +"=" + td.dep().value() + "," + lemma + "," + posTag;
-  				IIndexWord idxWord = dict.getIndexWord(td.dep().value(), POS.NOUN);
-  				if (idxWord != null){
-  					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
-      					IWordID wordID = idxWord.getWordIDs().get(i);
-      					IWord iword = dict.getWord(wordID);
-      					entry = entry + "," + iword.getSenseKey().toString();
-    				}
-    			}
-    			if (entry.contains(wp.word_one))
-    				subj_vi = true;
-    			else
-    				subj_vj = true;
-    			returnValue.add(entry);
-  			}
-  		}
+//  		System.out.println("gov=" + td.dep().word());
+  		if (td.gov().word() != null){
+  			if (td.gov().word().equals(wp.word_one) || td.gov().word().equals(wp.word_two)) {
+	  			String relation = td.reln().getShortName();
+	  			if (relation.contains("obj")){
+	  				System.out.println(relation);
+	  				String posTag = null;
+	  				for (TaggedWord t : tSentence) {
+	  					if (t.value().equals(td.dep().word())){
+	  						posTag = t.tag();
+	  						break;
+	  					}
+	  				}
+	  				String lemma = td.dep().lemma();
+	  				if (lemma == null) {
+	  					lemma = td.dep().word();
+	  				}
+	  				System.out.println("dep="+td.dep().word());
+	  				String entry = "Object_" + td.gov().word() +"=" + td.dep().word() + "," + lemma + "," + posTag;
+	  				IIndexWord idxWord = dict.getIndexWord(td.dep().word(), POS.NOUN);
+	  				if (idxWord != null){
+	  					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+	      					IWordID wordID = idxWord.getWordIDs().get(i);
+	      					IWord iword = dict.getWord(wordID);
+	      					entry = entry + "," + iword.getSenseKey().toString();
+	    				}
+	    			}
+	    			if (entry.contains(wp.word_one))
+	    				obj_vi = true;
+	    			else
+	    				obj_vj = true;
+	    			returnValue.add(entry);
+	  			} else if(relation.contains("subj")) {
+	  				System.out.println(relation);
+	  				String posTag = null;
+	  				for (TaggedWord t : tSentence) {
+	  					if (t.value().equals(td.dep().word())){
+	  						posTag = t.tag();
+	  						break;
+	  					}
+	  				}
+	  				String lemma = td.dep().lemma();
+	  				if (lemma == null) {
+	  					lemma = td.dep().word();
+	  				}
+	  				String entry = "Subject_" + td.gov().word() +"=" + td.dep().word() + "," + lemma + "," + posTag;
+	  				IIndexWord idxWord = dict.getIndexWord(td.dep().word(), POS.NOUN);
+	  				if (idxWord != null){
+	  					for (int i = 0; i <  idxWord.getWordIDs().size(); i++){
+	      					IWordID wordID = idxWord.getWordIDs().get(i);
+	      					IWord iword = dict.getWord(wordID);
+	      					entry = entry + "," + iword.getSenseKey().toString();
+	    				}
+	    			}
+	    			if (entry.contains(wp.word_one))
+	    				subj_vi = true;
+	    			else
+	    				subj_vj = true;
+	    			returnValue.add(entry);
+	  			}
+	  		}
+	  	}
     }
     if (!subj_vi)
     	returnValue.add("Subject_"+wp.word_one+"=null");
