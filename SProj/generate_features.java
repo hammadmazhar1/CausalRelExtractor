@@ -820,9 +820,14 @@ public class generate_features {
     				pw.flush();
         		refPw.flush();
         		// Cause-Effect Stuff
-        		if (labelled) {
+        		// if (labelled) {
         			if (label.equals("causal")) {
         				pw2.print(instance + " ");
+                if (one == 0) {
+                  pw2.print("cause" + " "); 
+                } else if (one == 1) {
+                  pw2.print("effect" + "  ");
+                }
         				for (j = 0; j < word_one_stuff.size(); j++) {
           				pw2.print(word_one_stuff.get(j)+",");
         				}
@@ -831,6 +836,11 @@ public class generate_features {
         				pw2.print(obj_vi + "  ");
         				pw2.print("\n");              
         				pw2.print(instance + " ");
+                if (two == 0) {
+                  pw2.print("cause" + " "); 
+                } else if (two == 1) {
+                  pw2.print("effect" + "  ");
+                }
 	            	for (j = 0; j < word_two_stuff.size(); j++) {
           				pw2.print(word_two_stuff.get(j)+",");
         				}
@@ -840,7 +850,7 @@ public class generate_features {
         				pw2.print("\n");              
         				pw2.flush();
 				      } 
-        		}
+        		// }
     			}
 	      }
 		  }
