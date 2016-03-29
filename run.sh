@@ -16,12 +16,12 @@ cd Mallet
 echo "Importing data into Mallet"
 bin/mallet import-file --input output_features_tagged.txt --output linguistic_causal_train.mallet
 bin/mallet import-file --input output_event_training.txt --output linguistic_event_train.mallet
-
+bin/mallet import-file --input output_features_tagged_cause_effect.txt --output cause_effect_train.mallet
 #train classifiers
 echo "Training classifiers"
 bin/mallet train-classifier --input linguistic_causal_train.mallet --output-classifier linguistic_causal.classifier --trainer MaxEnt
 bin/mallet train-classifier --input linguistic_event_train.mallet --output-classifier linguistic_event.classifier --trainer MaxEnt
-
+bin/mallet train-classifier --input cause_effect_train.mallet --output-classifier cause_effect.classifier
 #classify on test data
 
 echo "Classifying test data"
