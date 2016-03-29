@@ -820,41 +820,59 @@ public class generate_features {
     				pw.flush();
         		refPw.flush();
         		// Cause-Effect Stuff
-        		// if (labelled) {
+        		if (labelled) {
         			if (label.equals("causal")) {
-        				pw2.print(instance + " ");
-                if (one == 0) {
-                  pw2.print("cause" + " "); 
-                } else if (one == 1) {
-                  pw2.print("effect" + "  ");
-                }
+        				pw2.print(instance + "i ");
+               			if (one == 0) {
+                  			pw2.print("cause" + " "); 
+                		} else if (one == 1) {
+                  			pw2.print("effect" + "  ");
+                		}
         				for (j = 0; j < word_one_stuff.size(); j++) {
-          				pw2.print(word_one_stuff.get(j)+",");
+          					pw2.print(word_one_stuff.get(j)+",");
         				}
         				pw2.print(" ");
         				pw2.print(subj_vi + " ");
         				pw2.print(obj_vi + "  ");
         				pw2.print("\n");              
-        				pw2.print(instance + " ");
-                if (two == 0) {
-                  pw2.print("cause" + " "); 
-                } else if (two == 1) {
-                  pw2.print("effect" + "  ");
-                }
-	            	for (j = 0; j < word_two_stuff.size(); j++) {
-          				pw2.print(word_two_stuff.get(j)+",");
+        				pw2.print(instance + "j ");
+                		if (two == 0) {
+                  			pw2.print("cause" + " "); 
+                		} else if (two == 1) {
+                  			pw2.print("effect" + "  ");
+                		}
+	            		for (j = 0; j < word_two_stuff.size(); j++) {
+          					pw2.print(word_two_stuff.get(j)+",");
         				}
         				pw2.print(" ");
         				pw2.print(subj_vj + " ");
         				pw2.print(obj_vj + "  ");
         				pw2.print("\n");              
         				pw2.flush();
-				      } 
-        		// }
-    			}
-	      }
-		  }
-  		scanner.close();
+				    } 
+        		} else {
+        			pw2.print(instance + "i ");
+        			for (j = 0; j < word_one_stuff.size(); j++) {
+          					pw2.print(word_one_stuff.get(j)+",");
+        			}
+        			pw2.print(" ");
+        			pw2.print(subj_vi + " ");
+        			pw2.print(obj_vi + "  ");
+        			pw2.print("\n");              
+        			pw2.print(instance + "j ");
+        			for (j = 0; j < word_two_stuff.size(); j++) {
+          				pw2.print(word_two_stuff.get(j)+",");
+        			}
+        			pw2.print(" ");
+        			pw2.print(subj_vj + " ");
+        			pw2.print(obj_vj + "  ");
+        			pw2.print("\n");              
+        			pw2.flush();
+        		}
+    		}
+	    }
+	}
+  	scanner.close();
   	} catch (Exception e) {
   		e.printStackTrace();
   	}

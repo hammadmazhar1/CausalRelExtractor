@@ -27,3 +27,4 @@ bin/mallet train-classifier --input cause_effect_train.mallet --output-classifie
 echo "Classifying test data"
 bin/csv2classify --input output_features.txt --classifier linguistic_causal.classifier --output ling_causal_res.txt
 bin/csv2classify --input output_event_features.txt --classifier linguistic_event.classifier --output ling_event_res.txt
+bin/csv2classify --input output_features_cause_effect.txt --classifier cause_effect.classifier --output cause_effect_res.txt
