@@ -602,6 +602,7 @@ public class create_explicit_corpus {
     for (Word_Count wc : doc_count_words) {
       totalNumWords += wc.actualCount;
     }
+    pw.println(all_files.size());
     pw.println(totalNumWords);
     pw.println(totalSentences);
 

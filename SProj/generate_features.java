@@ -849,7 +849,7 @@ public class generate_features {
         				pw2.print(obj_vj + "  ");
         				pw2.print("\n");              
         				pw2.flush();
-				    } 
+				      } 
         		} else {
         			pw2.print(instance + "i ");
         			for (j = 0; j < word_one_stuff.size(); j++) {
@@ -869,10 +869,10 @@ public class generate_features {
         			pw2.print("\n");              
         			pw2.flush();
         		}
-    		}
-	    }
-	}
-  	scanner.close();
+      		}
+  	    }
+    	}
+    	scanner.close();
   	} catch (Exception e) {
   		e.printStackTrace();
   	}

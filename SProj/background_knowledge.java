@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,6 +16,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.net.*;
 import java.io.*;
+import java.util.NoSuchElementException;
 
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -36,13 +38,14 @@ import edu.mit.jwi.morph.*;
 //=================================================================================
 
 public class background_knowledge {
-	static List<File>       all_files         = new ArrayList<>();
+	static int              numFiles          = 0;
   static List<Word_Count> doc_count_words   = new ArrayList<>();
   static List<Word_Pair>  all_verb_pairs    = new ArrayList<>();
 	static int              totalNumWords     = 0;
   static int              totalSentences    = 0;
   static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
   static String           uDirName          = System.getProperty("user.dir") + "/textfiles/test";
+  static HashMap<Integer, Word_Pair> all_verb_pairs_hashmap = new HashMap<Integer, Word_Pair>();
   
 	//=================================================================================
   //=================================================================================
@@ -79,6 +82,10 @@ public class background_knowledge {
     return null;
   }
 
+  public static Word_Pair find_WP(int id) {
+    return all_verb_pairs_hashmap.get(id);
+  }
+
   //=================================================================================
   //=================================================================================
 
@@ -96,12 +103,12 @@ public class background_knowledge {
   	Word_Count wc = find_WC(word);
   	if (wc == null) {return -1;}
     double ans = 1.0 + wc.documentCount;
-    return all_files.size() / ans;
+    return numFiles / ans;
   }
 
   public static double idf(Word_Pair wp) {
     double ans = 1.0 + wp.documentCount;
-    return all_files.size() / ans;
+    return numFiles / ans;
   }
 
   //=================================================================================
@@ -122,7 +129,7 @@ public class background_knowledge {
   public static double PMI(Word_Pair wp) {
   	double word_one_p = P(wp.word_one);
   	double word_two_p = P(wp.word_two);
-
+    // System.out.println("pmi => " + Double.toString(word_one_p) + " " + Double.toString(word_two_p));
   	// Word doesn't exist.
   	if (word_one_p == -1 || word_two_p == -1) {return -1;}
     return Math.log(P(wp) / (word_one_p * word_two_p));
@@ -186,10 +193,10 @@ public class background_knowledge {
  	public static double ECA(Word_Pair wp) {
  		double factor = 1.0 / all_verb_pairs.size();
  		double cd = CD(wp);
-
+    // System.out.println("cd = " + Double.toString(cd));
   	// Word doesn't exist.
  		if (cd == -1) {return -1;}
-
+    
  		double sum = 0.0;
  		for (int i = 0; i < wp.causal.size(); i++) {
  			sum += C_i(wp, i);
@@ -244,7 +251,7 @@ public class background_knowledge {
   //=================================================================================
 
  	public static double C_i(Word_Pair wp, int i) {
- 		return wp.causal.get(i) / wp.noncausal.get(i);
+    return wp.causal.get(i) / wp.noncausal.get(i);
  	}
  
  	public static double ERM(Word_Pair wp, int i) {
@@ -272,6 +279,7 @@ public class background_knowledge {
 
  	public static void populateWords() throws Exception {
  		Scanner scanner = new Scanner(new File("count_words.txt"));
+    numFiles = scanner.nextInt();
     totalNumWords = scanner.nextInt();
     totalSentences = scanner.nextInt();
 
@@ -307,24 +315,44 @@ public class background_knowledge {
   	}
  	}
 
- 	public static void populateProbabilities() throws Exception {
- 		Scanner scanner = new Scanner(new File("..\\Mallet\\data.mallet"));
-  	while (scanner.hasNextLine()) {
-  		String pair = scanner.next();
-  		String[] pair2 = pair.split("-");
-  		Word_Pair wp = new Word_Pair(pair2[0], pair2[1]);
+  public static void populateVerbVerbPairsHashMap() throws Exception {
+    Scanner scanner = new Scanner(new File("pair_ref_test.txt"));
+    while (scanner.hasNextLine()) {
+      int id = 0;
+      try {
+        id = scanner.nextInt();
+      } catch (NoSuchElementException e) {
+        continue;
+      }
+      String verb_pair = scanner.next();
+      String[] verbs_pair = verb_pair.split("-");
+      Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[1]);
+      wp = find_WP(wp);
+      all_verb_pairs_hashmap.put(id, wp);
+    }
+  }
 
-  		scanner.next();
+ 	public static void populateProbabilities() throws Exception {
+ 		Scanner scanner = new Scanner(new File("..\\Mallet\\ling_causal_res.txt"));
+  	while (scanner.hasNextLine()) {
+      int id = 0;
+      try {
+        id = scanner.nextInt();
+      } catch (NoSuchElementException e) {
+        continue;
+      }
+      Word_Pair wp = find_WP(id);
+
+      scanner.next();
   		Double causal = scanner.nextDouble();
   		scanner.next();
   		Double noncausal = scanner.nextDouble();
 
-  		Word_Pair search = find_WP(wp);
-      if (search == null) {
+  		if (wp == null) {
       	continue;
       }
-      search.causal.add(causal);
-      search.noncausal.add(noncausal);
+      wp.causal.add(causal);
+      wp.noncausal.add(noncausal);
   	}
  	}
 
@@ -349,7 +377,8 @@ public class background_knowledge {
 	public static void main(String[] args) {
 		try {
     	populateWords();
-    	populateVerbVerbPairs();
+      populateVerbVerbPairs();
+      populateVerbVerbPairsHashMap();
     	populateProbabilities();
     } catch (Exception e) {
     	e.printStackTrace();
@@ -373,7 +402,11 @@ public class background_knowledge {
   	sortVerbVerbByScore();
 
   	for (Word_Pair wp : all_verb_pairs) {
-  		System.out.println(wp.print() + "      = " + Double.toString(wp.score));
+  		System.out.print(wp.toString());
+      for (int i = wp.toString().length(); i < 50; i++) {
+        System.out.print(" ");
+      }
+      System.out.println(wp.score);
   	}
 	}
 }
