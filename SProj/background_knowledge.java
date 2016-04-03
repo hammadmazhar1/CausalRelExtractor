@@ -260,18 +260,12 @@ public class background_knowledge {
 
  		// Word doesn't exist.
  		if (w1 == null || w2 == null) {return -1;}
- 		double one = S(w1, 0) + S(w2, 1);
- 		double two = S(w1, 1) + S(w2, 0);
+ 		double one = wp.cause_effect_one.get(i).x + wp.cause_effect_two.get(i).y;
+ 		double two = wp.cause_effect_one.get(i).y + wp.cause_effect_two.get(i).x;
 
- 		return -1.0 * Math.max(one, two);
- 	}
-
- 	public static double S(Word_Count w, int label) {
- 		if (label == 0) {
- 			return 0.0;
- 		} else {
- 			return 0.0;
- 		}
+    // not using Log means the negative sign multiplication isn't needed?
+ 		// return -1.0 * Math.max(one, two);
+    return Math.max(one, two); 
  	}
 
 	//=================================================================================
@@ -356,6 +350,33 @@ public class background_knowledge {
   	}
  	}
 
+  public static void populateCauseEffectProbabilities() throws Exception {
+    Scanner scanner = new Scanner(new File("..\\Mallet\\cause_effect_res.txt"));
+    int id = 0;
+    while (scanner.hasNextLine()) {
+      id++;
+      Word_Pair wp = find_WP(id);
+
+      try {
+        scanner.next();
+      } catch (NoSuchElementException e) {
+        continue;
+      }
+      scanner.next();
+      Double effect = scanner.nextDouble();
+      scanner.next();
+      Double cause = scanner.nextDouble();
+      wp.cause_effect_one.add(new dPair(cause, effect));
+
+      scanner.next();
+      scanner.next();
+      effect = scanner.nextDouble();
+      scanner.next();
+      cause = scanner.nextDouble();
+      wp.cause_effect_two.add(new dPair(cause, effect));
+    }
+  }
+
 	//=================================================================================
   //=================================================================================
 
@@ -380,6 +401,7 @@ public class background_knowledge {
       populateVerbVerbPairs();
       populateVerbVerbPairsHashMap();
     	populateProbabilities();
+      populateCauseEffectProbabilities();
     } catch (Exception e) {
     	e.printStackTrace();
     }
@@ -387,26 +409,39 @@ public class background_knowledge {
   	Collections.sort(all_verb_pairs);
 
   	for (Word_Pair wp : all_verb_pairs) {
-  		// System.out.println(wp.print());
-  		// System.out.println("sentences = " + Integer.toString(wp.sentences.size()));
-  		// System.out.println("causal    = " + Integer.toString(wp.causal.size()));
-  		// System.out.println("noncausal = " + Integer.toString(wp.noncausal.size()));
   		double temp = ECA(wp);
   		wp.score = temp;
-			// if (temp != -1) {
-			// 	System.out.println("ECA = " + Double.toString(temp));
-			// }
-			// System.out.println("\n");
-  	}
+		}
 
   	sortVerbVerbByScore();
 
+    System.out.println("ECA\n");
   	for (Word_Pair wp : all_verb_pairs) {
   		System.out.print(wp.toString());
-      for (int i = wp.toString().length(); i < 50; i++) {
+      for (int i = wp.toString().length(); i < 40; i++) {
         System.out.print(" ");
       }
       System.out.println(wp.score);
   	}
+
+    // ICA
+    Collections.sort(all_verb_pairs);
+
+    for (Word_Pair wp : all_verb_pairs) {
+      wp.score = 0.0;
+      double temp = ICA(wp);
+      wp.score = temp;
+    }
+
+    sortVerbVerbByScore();
+
+    System.out.println("\nICA\n");
+    for (Word_Pair wp : all_verb_pairs) {
+      System.out.print(wp.toString());
+      for (int i = wp.toString().length(); i < 40; i++) {
+        System.out.print(" ");
+      }
+      System.out.println(wp.score);
+    }
 	}
 }
