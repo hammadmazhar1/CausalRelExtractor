@@ -513,6 +513,25 @@ public class background_knowledge {
     }
     pw.close();
 
+    // Output the Categories of verb-verb pairs Knowledge Base to a file called knowledge_base_2.txt;
+    pw = new PrintWriter(new File("knowledge_base_2.txt"));
+    int one_third = all_verb_pairs.size() / 3;
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      Word_Pair wp = all_verb_pairs.get(i);
+      if (i <= one_third) {
+        pw.print(prettyPrint(wp.hashmap_key, 7) + Integer.toString(1));
+      } else if (i <= 2*one_third) {
+        pw.print(prettyPrint(wp.hashmap_key, 7) + Integer.toString(2));
+      } else {
+        pw.print(prettyPrint(wp.hashmap_key, 7) + Integer.toString(3));
+      }
+      
+      if (i != all_verb_pairs.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+
     // Calculate rank scores
     rank();
 
