@@ -12,6 +12,7 @@ class Word_Pair implements Comparable<Word_Pair> {
   public List<Double> causal;
   public List<Double> noncausal;
   public double       score;
+  public int          hashmap_key;
   public List<dPair>  cause_effect_one;
   public List<dPair>  cause_effect_two; 
 
@@ -34,6 +35,7 @@ class Word_Pair implements Comparable<Word_Pair> {
     causal                = new ArrayList<>();
     noncausal             = new ArrayList<>();
     score                 = 0;
+    hashmap_key           = 0;
     cause_effect_one      = new ArrayList<>();
     cause_effect_two      = new ArrayList<>();
   }
@@ -57,6 +59,7 @@ class Word_Pair implements Comparable<Word_Pair> {
     causal                = new ArrayList<>();
     noncausal             = new ArrayList<>();
     score                 = 0;
+    hashmap_key           = 0;
     cause_effect_one      = new ArrayList<>();
     cause_effect_two      = new ArrayList<>();
   }

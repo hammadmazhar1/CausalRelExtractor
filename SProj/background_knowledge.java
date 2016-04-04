@@ -322,6 +322,9 @@ public class background_knowledge {
       String[] verbs_pair = verb_pair.split("-");
       Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[1]);
       wp = find_WP(wp);
+      if (wp != null) {
+        wp.hashmap_key = id;
+      }
       all_verb_pairs_hashmap.put(id, wp);
     }
   }
@@ -392,10 +395,45 @@ public class background_knowledge {
  		}
  	}
 
+  public static void rank() {
+    int rank = 0;
+    List<Integer> ranks = new ArrayList<>();
+    ranks.add(0);
+    for (int i = 1; i < all_verb_pairs.size(); i++) {
+      if (all_verb_pairs.get(i).score < all_verb_pairs.get(i-1).score) {
+        rank++;
+      }
+      ranks.add(rank);
+    }
+
+    int size = ranks.size();
+
+    for (int i = 0; i < ranks.size(); i++) {
+      all_verb_pairs.get(i).score = (((double)size) - (double)(ranks.get(i))) / ((double)size);  
+    }
+  }
+
+  //=================================================================================
+  //=================================================================================
+
+  public static String prettyPrint(int arg, int length) {
+    String s = Integer.toString(arg);
+    int temp = arg;
+    int num = 0;
+    while (temp > 0) {
+      temp /= 10;
+      num++;
+    }
+    for (int i = length; i > num; i--) {
+      s += " ";
+    }
+    return s;
+  }
+
 	//=================================================================================
   //=================================================================================
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		try {
     	populateWords();
       populateVerbVerbPairs();
@@ -443,5 +481,51 @@ public class background_knowledge {
       }
       System.out.println(wp.score);
     }
+
+    // BCA
+    Collections.sort(all_verb_pairs);
+
+    for (Word_Pair wp : all_verb_pairs) {
+      wp.score = 0.0;
+      double temp = BCA(wp);
+      wp.score = temp;
+    }
+
+    sortVerbVerbByScore();
+
+    System.out.println("\nBCA\n");
+    for (Word_Pair wp : all_verb_pairs) {
+      System.out.print(wp.toString());
+      for (int i = wp.toString().length(); i < 40; i++) {
+        System.out.print(" ");
+      }
+      System.out.println(wp.score);
+    }
+
+    // Output the Knowledge Base to a file called knowledge_base.txt;
+    PrintWriter pw = new PrintWriter(new File("knowledge_base.txt"));
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      Word_Pair wp = all_verb_pairs.get(i);
+      pw.print(prettyPrint(wp.hashmap_key, 7) + Double.toString(wp.score));
+      if (i != all_verb_pairs.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+
+    // Calculate rank scores
+    rank();
+
+    // Output the Ranked Knowledge Base to a file called knowledge_base_1.txt;
+    pw = new PrintWriter(new File("knowledge_base_1.txt"));
+    for (int i = 0; i < all_verb_pairs.size(); i++) {
+      Word_Pair wp = all_verb_pairs.get(i);
+      pw.print(prettyPrint(wp.hashmap_key, 7) + Double.toString(wp.score));
+      if (i != all_verb_pairs.size()-1) {
+        pw.print("\n");
+      }
+    }
+    pw.close();
+
 	}
 }
