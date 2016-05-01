@@ -45,7 +45,8 @@ public class background_knowledge {
   static int              totalSentences    = 0;
   static String           dirName           = System.getProperty("user.dir") + "\\textfiles\\test";
   static String           uDirName          = System.getProperty("user.dir") + "/textfiles/test";
-  static HashMap<Integer, Word_Pair> all_verb_pairs_hashmap = new HashMap<Integer, Word_Pair>();
+  static HashMap<Integer, Word_Pair>  all_verb_pairs_hashmap  = new HashMap<Integer, Word_Pair>();
+  static HashMap<Integer, String>     labels                  = new HashMap<Integer, String>();
   
 	//=================================================================================
   //=================================================================================
@@ -409,7 +410,44 @@ public class background_knowledge {
     int size = ranks.size();
 
     for (int i = 0; i < ranks.size(); i++) {
-      all_verb_pairs.get(i).score = (((double)size) - (double)(ranks.get(i))) / ((double)size);  
+      all_verb_pairs.get(i).score = (((double)size) - (double)(ranks.get(i))) / ((double)size);
+      ranking_scores.put(all_verb_pairs.get(i).hashmap_key, all_verb_pairs.get(i).score);
+    }
+  }
+
+  public static double sum(List<Double> list) {
+    double sum = 0.0;
+    for (Double d : list) {
+      sum += d;
+    }
+    return sum;
+  }
+
+  /**
+   * Modification of basic linear program
+   */
+  public static void Z_1() {
+    labels.clear();
+    for (Word_Pair wp : all_verb_pairs) {
+      if (sum(wp.causal) > sum(wp.noncausal)) {
+        labels.put(wp.hashmap_key, "causal");
+      } else {
+        labels.put(wp.hashmap_key, "noncausal");
+      }
+    }
+  }
+
+  /**
+   * Modification of linear program with knowledge base 1. To be used after rank().
+   */
+  public static void Z_KB_1() {
+    labels.clear();
+    for (Word_Pair wp : all_verb_pairs) {
+      if (sum(wp.causal)*wp.score > sum(wp.noncausal)*(1-wp.score)) {
+        labels.put(wp.hashmap_key, "causal");
+      } else {
+        labels.put(wp.hashmap_key, "noncausal");
+      }
     }
   }
 
@@ -502,8 +540,8 @@ public class background_knowledge {
       System.out.println(wp.score);
     }
 
-    // Output the Knowledge Base to a file called knowledge_base.txt;
-    PrintWriter pw = new PrintWriter(new File("knowledge_base.txt"));
+    // Output the Knowledge Base to a file called knowledge_base_causal.txt;
+    PrintWriter pw = new PrintWriter(new File("knowledge_base_causal.txt"));
     for (int i = 0; i < all_verb_pairs.size(); i++) {
       Word_Pair wp = all_verb_pairs.get(i);
       pw.print(prettyPrint(wp.hashmap_key, 7) + Double.toString(wp.score));

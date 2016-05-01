@@ -10,10 +10,10 @@ Implicit Causal Association (Saad): @due(16-03-11 00:00)
   ✔ Eq 3.14,   Page 46 @done (16-03-10 11:54)
 
 Ranking Scores of Verbs (Saad): @due(16-03-14 00:00)
-  ☐ Eq 3.15,   Page 47
+  ✔ Eq 3.15,   Page 47 @done (16-04-03 12:53)
 
 Categories of Verb-Verb Pairs (Saad): @due(16-03-15 00:00)
-  ☐ Splitting ranked list of verbs into thirds, assigning labels.
+  ✔ Splitting ranked list of verbs into thirds, assigning labels. @done (16-04-03 12:53)
 
 Identification of Causal Semantics of Verbs (Hammad): @due(16-03-20 00:00)
   ✔ Linguistic Definition of Events, Section 3.3.1, Page 50,  Build supervised classifier @done (16-03-20 15:16)
