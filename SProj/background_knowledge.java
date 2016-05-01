@@ -47,6 +47,7 @@ public class background_knowledge {
   static String           uDirName          = System.getProperty("user.dir") + "/textfiles/test";
   static HashMap<Integer, Word_Pair>  all_verb_pairs_hashmap  = new HashMap<Integer, Word_Pair>();
   static HashMap<Integer, String>     labels                  = new HashMap<Integer, String>();
+  static HashMap<Integer, Double>     ranking_scores          = new HashMap<Integer, Double>();
   
 	//=================================================================================
   //=================================================================================
@@ -320,13 +321,14 @@ public class background_knowledge {
         continue;
       }
       String verb_pair = scanner.next();
+      String sent = scanner.nextLine();
       String[] verbs_pair = verb_pair.split("-");
       Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[1]);
-      wp = find_WP(wp);
-      if (wp != null) {
-        wp.hashmap_key = id;
-      }
+      Word_Pair wp2 = find_WP(wp);
+      wp.sentences.add(sent);
+      wp.hashmap_key = id;
       all_verb_pairs_hashmap.put(id, wp);
+      
     }
   }
 
@@ -340,7 +342,7 @@ public class background_knowledge {
         continue;
       }
       Word_Pair wp = find_WP(id);
-
+      Word_Pair wp2 = find_WP(wp);
       scanner.next();
   		Double causal = scanner.nextDouble();
   		scanner.next();
@@ -349,8 +351,10 @@ public class background_knowledge {
   		if (wp == null) {
       	continue;
       }
-      wp.causal = causal;
-      wp.noncausal = noncausal;
+      wp.causal.add(causal);
+      wp.noncausal.add(noncausal);
+      wp2.causal.add(causal);
+      wp2.noncausal.add(noncausal);
   	}
  	}
 
@@ -360,7 +364,7 @@ public class background_knowledge {
     while (scanner.hasNextLine()) {
       id++;
       Word_Pair wp = find_WP(id);
-
+      Word_Pair wp2 = find_WP(wp);
       try {
         scanner.next();
       } catch (NoSuchElementException e) {
@@ -370,25 +374,28 @@ public class background_knowledge {
       Double effect = scanner.nextDouble();
       scanner.next();
       Double cause = scanner.nextDouble();
-      wp.cause_effect_one = new dPair(cause, effect);
+      wp.cause_effect_one.add(new dPair(cause, effect));
+      wp2.cause_effect_one.add(new dPair(cause, effect));
 
       scanner.next();
       scanner.next();
       effect = scanner.nextDouble();
       scanner.next();
       cause = scanner.nextDouble();
-      wp.cause_effect_two = new dPair(cause, effect);
+      wp.cause_effect_two.add(new dPair(cause, effect));
+      wp2.cause_effect_two.add(new dPair(cause, effect));
     }
   }
 
 	//=================================================================================
   //=================================================================================
-  public static void populateEventProbabilities() {
-    Scanner scanner = new Scanner(new File ("ling_event_res"));
+  public static void populateEventProbabilities() throws Exception{
+     Scanner scanner = new Scanner(new File("ling_event_res.txt"));
     int id = 0;
     while (scanner.hasNextLine()) {
       id++;
       Word_Pair wp = find_WP(id);
+      Word_Pair wp2 = find_WP(wp);
 
       try {
         scanner.next();
@@ -399,16 +406,15 @@ public class background_knowledge {
       Double event = scanner.nextDouble();
       scanner.next();
       Double nonevent = scanner.nextDouble();
-      wp.event[0] = event;
-      wp.nonevent[0] =nonevent;
-
+      wp.evt_nevt_one.add(new dPair(event, nonevent));
+      wp2.evt_nevt_one.add(new dPair(event, nonevent));
       scanner.next();
       scanner.next();
-      event= scanner.nextDouble();
+      event = scanner.nextDouble();
       scanner.next();
       nonevent = scanner.nextDouble();
-      wp.event[1] = event;
-      wp.nonevent[1] = nonevent;
+      wp.evt_nevt_two.add(new dPair(event, nonevent));
+      wp2.evt_nevt_two.add(new dPair(event, nonevent));
     }
   }
   //=================================================================================
@@ -458,7 +464,7 @@ public class background_knowledge {
   public static void Z_1() {
     labels.clear();
     for (Word_Pair wp : all_verb_pairs) {
-      if (wp.causal > wp.noncausal) {
+      if (sum(wp.causal) > sum(wp.noncausal)) {
         labels.put(wp.hashmap_key, "causal");
       } else {
         labels.put(wp.hashmap_key, "noncausal");
@@ -472,14 +478,29 @@ public class background_knowledge {
   public static void Z_KB_1() {
     labels.clear();
     for (Word_Pair wp : all_verb_pairs) {
-      if (wp.causal*wp.score > wp.noncausal*(1-wp.score)) {
+      if (sum(wp.causal)*wp.score > sum(wp.noncausal)*(1-wp.score)) {
         labels.put(wp.hashmap_key, "causal");
       } else {
         labels.put(wp.hashmap_key, "noncausal");
       }
     }
   }
-
+  /**
+   * Modification of linear program with Z3.
+   */
+  public static void Z_3() {
+    for (Word_Pair wp : all_verb_pairs_hashmap.values()) {
+      double causal_1 = wp.causal.get(0)*wp.evt_nevt_one.get(0).x*wp.evt_nevt_two.get(0).x;
+      double causal_2 = wp.causal.get(0)*wp.evt_nevt_one.get(0).x*wp.evt_nevt_two.get(0).y;
+      double causal_3 = wp.causal.get(0)*wp.evt_nevt_one.get(0).y*wp.evt_nevt_two.get(0).x;
+      double ncausal  = wp.noncausal.get(0)*wp.evt_nevt_one.get(0).y*wp.evt_nevt_two.get(0).y;
+      if (causal_1 > ncausal || causal_2 > ncausal || causal_3 > ncausal) {
+        labels.put(wp.hashmap_key,"causal");
+      } else {
+        labels.put(wp.hashmap_key,"noncausal");
+      }
+    }
+  }
   //=================================================================================
   //=================================================================================
 
@@ -507,6 +528,7 @@ public class background_knowledge {
       populateVerbVerbPairsHashMap();
     	populateProbabilities();
       populateCauseEffectProbabilities();
+      populateEventProbabilities();
     } catch (Exception e) {
     	e.printStackTrace();
     }

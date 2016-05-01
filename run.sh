@@ -22,7 +22,7 @@ bin/mallet import-file --input output_features_tagged_cause_effect.txt --output 
 #train classifiers
 echo "Training classifiers"
 bin/mallet train-classifier --input linguistic_causal_train.mallet --output-classifier linguistic_causal.classifier --trainer MaxEnt
-bin/mallet train-classifier --input linguistic_event_train.mallet --output-classifier linguistic_event.classifier --trainer MaxEnt
+bin/mallet train-classifier --input linguistic_event_train.mallet --output-classifier linguistic_event.classifier --trainer NaiveBayes
 bin/mallet train-classifier --input cause_effect_train.mallet --output-classifier cause_effect.classifier
 
 #classify on test data
@@ -30,3 +30,9 @@ echo "Classifying test data"
 bin/csv2classify --input output_features.txt --classifier linguistic_causal.classifier --output ling_causal_res.txt
 bin/csv2classify --input output_event_features.txt --classifier linguistic_event.classifier --output ling_event_res.txt
 bin/csv2classify --input output_features_cause_effect.txt --classifier cause_effect.classifier --output cause_effect_res.txt
+
+cd ..
+
+echo "Moving results to SProj"
+
+cp Mallet/*res.txt SProj/

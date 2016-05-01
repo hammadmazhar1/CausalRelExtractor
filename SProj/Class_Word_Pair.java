@@ -9,14 +9,15 @@ class Word_Pair implements Comparable<Word_Pair> {
   public List<String> sentences;
   public List<String> sentences_tags;
   public List<Pair>   sentences_event_roles;
-  public Double causal;
-  public Double noncausal;
-  public double[]     event;
+  public List<Double> causal;
+  public List<Double> noncausal;
+  public List<dPair>  evt_nevt_one;
+  public List<dPair>  evt_nevt_two;
   public double[]     nonevent;
   public double       score;
   public int          hashmap_key;
-  public dPair  cause_effect_one;
-  public dPair  cause_effect_two; 
+  public List<dPair>  cause_effect_one;
+  public List<dPair>  cause_effect_two; 
 
   public Word_Pair(String w1, String w2) {
     w1 = w1.toLowerCase();
@@ -34,14 +35,14 @@ class Word_Pair implements Comparable<Word_Pair> {
     sentences             = new ArrayList<>();
     sentences_tags        = new ArrayList<>();
     sentences_event_roles = new ArrayList<>();
-    causal                = 0.0;
-    noncausal             = 0.0;
-    event                 = new double[2];
-    nonevent              = new double[2];
+    causal                = new ArrayList<>();
+    noncausal             = new ArrayList<>();
+    evt_nevt_one          = new ArrayList<>();
+    evt_nevt_two          = new ArrayList<>();
     score                 = 0;
     hashmap_key           = 0;
-    cause_effect_one      = null
-    cause_effect_two      = null;
+    cause_effect_one      = new ArrayList<>();
+    cause_effect_two      = new ArrayList<>();
   }
 
   public Word_Pair(String w1, String w2, int _document, int _actual) {
@@ -60,12 +61,14 @@ class Word_Pair implements Comparable<Word_Pair> {
     sentences             = new ArrayList<>();
     sentences_tags        = new ArrayList<>();
     sentences_event_roles = new ArrayList<>();
-    causal                = 0;
-    noncausal             = 0;
+    causal                = new ArrayList<>();
+    noncausal             = new ArrayList<>();
+    evt_nevt_one          = new ArrayList<>();
+    evt_nevt_two          = new ArrayList<>();
     score                 = 0;
     hashmap_key           = 0;
-    cause_effect_one      = null;
-    cause_effect_two      = null;
+    cause_effect_one      = new ArrayList<>();
+    cause_effect_two      = new ArrayList<>();
   }
 
   public String toString() {
@@ -91,7 +94,7 @@ class Word_Pair implements Comparable<Word_Pair> {
       for (int i = 0; i < sentences.size(); i++) {
         temp += sentences.get(i) + "\n";      
       }
-    }
+    } 
     return temp;
   }
 
