@@ -47,7 +47,6 @@ public class background_knowledge {
   static String           uDirName          = System.getProperty("user.dir") + "/textfiles/test";
   static HashMap<Integer, Word_Pair>  all_verb_pairs_hashmap  = new HashMap<Integer, Word_Pair>();
   static HashMap<Integer, String>     labels                  = new HashMap<Integer, String>();
-  static HashMap<Integer, Double>     ranking_scores          = new HashMap<Integer, Double>();
   
 	//=================================================================================
   //=================================================================================
@@ -323,12 +322,10 @@ public class background_knowledge {
       String verb_pair = scanner.next();
       String[] verbs_pair = verb_pair.split("-");
       Word_Pair wp = new Word_Pair(verbs_pair[0],verbs_pair[1]);
-      String sent = scanner.nextLine();
-      wp.sentences.add(sent);
+      wp = find_WP(wp);
       if (wp != null) {
         wp.hashmap_key = id;
       }
-
       all_verb_pairs_hashmap.put(id, wp);
     }
   }
