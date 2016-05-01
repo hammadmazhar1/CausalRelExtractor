@@ -9,12 +9,14 @@ class Word_Pair implements Comparable<Word_Pair> {
   public List<String> sentences;
   public List<String> sentences_tags;
   public List<Pair>   sentences_event_roles;
-  public List<Double> causal;
-  public List<Double> noncausal;
+  public Double causal;
+  public Double noncausal;
+  public double[]     event;
+  public double[]     nonevent;
   public double       score;
   public int          hashmap_key;
-  public List<dPair>  cause_effect_one;
-  public List<dPair>  cause_effect_two; 
+  public dPair  cause_effect_one;
+  public dPair  cause_effect_two; 
 
   public Word_Pair(String w1, String w2) {
     w1 = w1.toLowerCase();
@@ -32,12 +34,14 @@ class Word_Pair implements Comparable<Word_Pair> {
     sentences             = new ArrayList<>();
     sentences_tags        = new ArrayList<>();
     sentences_event_roles = new ArrayList<>();
-    causal                = new ArrayList<>();
-    noncausal             = new ArrayList<>();
+    causal                = 0.0;
+    noncausal             = 0.0;
+    event                 = new double[2];
+    nonevent              = new double[2];
     score                 = 0;
     hashmap_key           = 0;
-    cause_effect_one      = new ArrayList<>();
-    cause_effect_two      = new ArrayList<>();
+    cause_effect_one      = null
+    cause_effect_two      = null;
   }
 
   public Word_Pair(String w1, String w2, int _document, int _actual) {
@@ -56,12 +60,12 @@ class Word_Pair implements Comparable<Word_Pair> {
     sentences             = new ArrayList<>();
     sentences_tags        = new ArrayList<>();
     sentences_event_roles = new ArrayList<>();
-    causal                = new ArrayList<>();
-    noncausal             = new ArrayList<>();
+    causal                = 0;
+    noncausal             = 0;
     score                 = 0;
     hashmap_key           = 0;
-    cause_effect_one      = new ArrayList<>();
-    cause_effect_two      = new ArrayList<>();
+    cause_effect_one      = null;
+    cause_effect_two      = null;
   }
 
   public String toString() {

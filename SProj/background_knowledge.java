@@ -334,7 +334,7 @@ public class background_knowledge {
   }
 
  	public static void populateProbabilities() throws Exception {
- 		Scanner scanner = new Scanner(new File("..\\Mallet\\ling_causal_res.txt"));
+ 		Scanner scanner = new Scanner(new File("ling_causal_res.txt"));
   	while (scanner.hasNextLine()) {
       int id = 0;
       try {
@@ -352,13 +352,13 @@ public class background_knowledge {
   		if (wp == null) {
       	continue;
       }
-      wp.causal.add(causal);
-      wp.noncausal.add(noncausal);
+      wp.causal = causal;
+      wp.noncausal = noncausal;
   	}
  	}
 
   public static void populateCauseEffectProbabilities() throws Exception {
-    Scanner scanner = new Scanner(new File("..\\Mallet\\cause_effect_res.txt"));
+    Scanner scanner = new Scanner(new File("cause_effect_res.txt"));
     int id = 0;
     while (scanner.hasNextLine()) {
       id++;
@@ -373,20 +373,49 @@ public class background_knowledge {
       Double effect = scanner.nextDouble();
       scanner.next();
       Double cause = scanner.nextDouble();
-      wp.cause_effect_one.add(new dPair(cause, effect));
+      wp.cause_effect_one = new dPair(cause, effect);
 
       scanner.next();
       scanner.next();
       effect = scanner.nextDouble();
       scanner.next();
       cause = scanner.nextDouble();
-      wp.cause_effect_two.add(new dPair(cause, effect));
+      wp.cause_effect_two = new dPair(cause, effect);
     }
   }
 
 	//=================================================================================
   //=================================================================================
+  public static void populateEventProbabilities() {
+    Scanner scanner = new Scanner(new File ("ling_event_res"));
+    int id = 0;
+    while (scanner.hasNextLine()) {
+      id++;
+      Word_Pair wp = find_WP(id);
 
+      try {
+        scanner.next();
+      } catch (NoSuchElementException e) {
+        continue;
+      }
+      scanner.next();
+      Double event = scanner.nextDouble();
+      scanner.next();
+      Double nonevent = scanner.nextDouble();
+      wp.event[0] = event;
+      wp.nonevent[0] =nonevent;
+
+      scanner.next();
+      scanner.next();
+      event= scanner.nextDouble();
+      scanner.next();
+      nonevent = scanner.nextDouble();
+      wp.event[1] = event;
+      wp.nonevent[1] = nonevent;
+    }
+  }
+  //=================================================================================
+  //=================================================================================
  	public static void sortVerbVerbByScore() {
  		for (int i = 1; i < all_verb_pairs.size(); i++) {
  			int j = i;
@@ -432,7 +461,7 @@ public class background_knowledge {
   public static void Z_1() {
     labels.clear();
     for (Word_Pair wp : all_verb_pairs) {
-      if (sum(wp.causal) > sum(wp.noncausal)) {
+      if (wp.causal > wp.noncausal) {
         labels.put(wp.hashmap_key, "causal");
       } else {
         labels.put(wp.hashmap_key, "noncausal");
@@ -446,7 +475,7 @@ public class background_knowledge {
   public static void Z_KB_1() {
     labels.clear();
     for (Word_Pair wp : all_verb_pairs) {
-      if (sum(wp.causal)*wp.score > sum(wp.noncausal)*(1-wp.score)) {
+      if (wp.causal*wp.score > wp.noncausal*(1-wp.score)) {
         labels.put(wp.hashmap_key, "causal");
       } else {
         labels.put(wp.hashmap_key, "noncausal");
