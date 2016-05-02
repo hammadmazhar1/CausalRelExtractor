@@ -36,3 +36,8 @@ cd ..
 echo "Moving results to SProj"
 
 cp Mallet/*res.txt SProj/
+
+echo "Running postprocess classification"
+cd SProj
+
+./postprocess.sh

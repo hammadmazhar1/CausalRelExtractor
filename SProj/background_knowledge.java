@@ -278,13 +278,18 @@ public class background_knowledge {
     numFiles = scanner.nextInt();
     totalNumWords = scanner.nextInt();
     totalSentences = scanner.nextInt();
-
+    int count = 0;
     while (scanner.hasNextLine()) {
       int i1 = scanner.nextInt();
+      //System.out.println(i1);
       int i2 = scanner.nextInt();
+      //System.out.println(i2);
       String s = scanner.next();
+      //System.out.println(s);
       Word_Count wc = new Word_Count(s, i1, i2);
       doc_count_words.add(wc);
+      count++;
+      System.out.println(count+"\n");
     }
     scanner.close();
  	}
@@ -463,8 +468,8 @@ public class background_knowledge {
    */
   public static void Z_1() {
     labels.clear();
-    for (Word_Pair wp : all_verb_pairs) {
-      if (sum(wp.causal) > sum(wp.noncausal)) {
+     for (Word_Pair wp : all_verb_pairs_hashmap.values()) {
+      if (wp.causal.get(0) > wp.noncausal.get(0)) {
         labels.put(wp.hashmap_key, "causal");
       } else {
         labels.put(wp.hashmap_key, "noncausal");
@@ -477,8 +482,9 @@ public class background_knowledge {
    */
   public static void Z_KB_1() {
     labels.clear();
-    for (Word_Pair wp : all_verb_pairs) {
-      if (sum(wp.causal)*wp.score > sum(wp.noncausal)*(1-wp.score)) {
+    for (Word_Pair wp : all_verb_pairs_hashmap.values()) {
+      Word_Pair wp2 = find_WP(wp);
+      if (wp.causal.get(0)*wp2.score > wp.noncausal.get(0)*(1-wp2.score)) {
         labels.put(wp.hashmap_key, "causal");
       } else {
         labels.put(wp.hashmap_key, "noncausal");
@@ -489,11 +495,27 @@ public class background_knowledge {
    * Modification of linear program with Z3.
    */
   public static void Z_3() {
+    labels.clear();
     for (Word_Pair wp : all_verb_pairs_hashmap.values()) {
       double causal_1 = wp.causal.get(0)*wp.evt_nevt_one.get(0).x*wp.evt_nevt_two.get(0).x;
       double causal_2 = wp.causal.get(0)*wp.evt_nevt_one.get(0).x*wp.evt_nevt_two.get(0).y;
       double causal_3 = wp.causal.get(0)*wp.evt_nevt_one.get(0).y*wp.evt_nevt_two.get(0).x;
       double ncausal  = wp.noncausal.get(0)*wp.evt_nevt_one.get(0).y*wp.evt_nevt_two.get(0).y;
+      if (causal_1 > ncausal || causal_2 > ncausal || causal_3 > ncausal) {
+        labels.put(wp.hashmap_key,"causal");
+      } else {
+        labels.put(wp.hashmap_key,"noncausal");
+      }
+    }
+  }
+  public static void Z_KB_1andZ_3() {
+    labels.clear();
+    for (Word_Pair wp : all_verb_pairs_hashmap.values()) {
+      Word_Pair wp2 = find_WP(wp);
+      double causal_1 = wp.causal.get(0)*wp.evt_nevt_one.get(0).x*wp.evt_nevt_two.get(0).x +wp.causal.get(0)*wp2.score;
+      double causal_2 = wp.causal.get(0)*wp.evt_nevt_one.get(0).x*wp.evt_nevt_two.get(0).y +wp.causal.get(0)*wp2.score;
+      double causal_3 = wp.causal.get(0)*wp.evt_nevt_one.get(0).y*wp.evt_nevt_two.get(0).x +wp.causal.get(0)*wp2.score;
+      double ncausal  = wp.noncausal.get(0)*wp.evt_nevt_one.get(0).y*wp.evt_nevt_two.get(0).y +wp.noncausal.get(0)*(1-wp2.score);
       if (causal_1 > ncausal || causal_2 > ncausal || causal_3 > ncausal) {
         labels.put(wp.hashmap_key,"causal");
       } else {
@@ -634,6 +656,33 @@ public class background_knowledge {
       }
     }
     pw.close();
-
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Please select the objective function to use for classification:");
+    System.out.println("1. Z1 (Simple Causal Classifier).");
+    System.out.println("2. ZKB1 (Causal Classifier with Background Knowledge ");
+    System.out.println("3. Z3 (Linguisitic Event based classification");
+    System.out.println("4. ZKB1 + Z3 (Background knowledge combined with Linguistic Event classifcation");
+    int input = scanner.nextInt();
+    switch(input){
+      case 1:
+        Z_1();
+        break;
+      case 2:
+        Z_KB_1();
+        break;
+      case 3:
+        Z_3();
+        break;
+      case 4:
+        Z_KB_1andZ_3();
+        break; 
+    }
+    pw = new PrintWriter(new File("Final_Classifier_Output.txt"));
+    Set<Integer> labelKeys = labels.keySet();
+    for (int i : labelKeys) {
+      pw.print(i + " " + labels.get(i) + "\n");
+    }
+    System.out.println("Output written to Final_Classifier_Output.txt");
+    pw.close();
 	}
 }

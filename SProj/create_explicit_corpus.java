@@ -607,9 +607,11 @@ public class create_explicit_corpus {
     pw.println(totalSentences);
 
     for (int i = 0; i < doc_count_words.size(); i++) {
-      pw.print(doc_count_words.get(i).prettyPrint());
-      if (i != doc_count_words.size()-1) {
-        pw.print("\n");
+      if (!(i == 20187)) {
+        pw.print(doc_count_words.get(i).prettyPrint());
+        if (i != doc_count_words.size()-1) {
+          pw.print("\n");
+        }
       }
     }
     pw.close();
