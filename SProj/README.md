@@ -9,7 +9,7 @@ We have created a system which automatically creates a training corpus, trains a
 Bibliography
 ============
 
-Our bibliography for this project can be found at: https://www.github.com/hammadmazhar1/causalrelextractor/Documentation/Bibliography/Bibliography.md
+Our bibliography for this project can be found at: https://github.com/hammadmazhar1/CausalRelExtractor/blob/master/Documentation/Bibliography/Bibliography.md
 
 How To Run
 ==========
