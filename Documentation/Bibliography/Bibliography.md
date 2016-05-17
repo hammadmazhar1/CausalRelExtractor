@@ -31,10 +31,6 @@ Discourse Parsers
 * 2014 EMNLP - Dependency Based Discourse Parser for Single-Document Summarization.pdf
 * Rhetorical Structure Theory.pdf
 
-Mehwish Riaz
-------------
-* Mehwish_Riaz.pdf
-
 Statistan - Moodistan
 ---------------------
 * Statistan.pdf
