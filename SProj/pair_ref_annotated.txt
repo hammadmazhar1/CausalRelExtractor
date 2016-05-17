@@ -1,0 +1,19 @@
+1	non-causal
+2	non-causal
+3	non-causal
+4	non-causal
+5	non-causal
+6	non-causal
+7	non-causal
+8	non-causal
+9	non-causal
+10  non-causal
+11  non-causal
+12 	non-causal
+13	non-causal
+14	non-causal
+18	causal
+42	causal
+49 	causal
+50	causal
+

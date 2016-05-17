@@ -289,7 +289,7 @@ public class background_knowledge {
       Word_Count wc = new Word_Count(s, i1, i2);
       doc_count_words.add(wc);
       count++;
-      System.out.println(count+"\n");
+      //System.out.println(count+"\n");
     }
     scanner.close();
  	}
@@ -318,6 +318,7 @@ public class background_knowledge {
 
   public static void populateVerbVerbPairsHashMap() throws Exception {
     Scanner scanner = new Scanner(new File("pair_ref_test.txt"));
+    System.out.println("Populating verb-verb pair hashmap ");
     while (scanner.hasNextLine()) {
       int id = 0;
       try {
@@ -333,7 +334,7 @@ public class background_knowledge {
       wp.sentences.add(sent);
       wp.hashmap_key = id;
       all_verb_pairs_hashmap.put(id, wp);
-      
+      //System.out.println(id);
     }
   }
 
@@ -366,29 +367,35 @@ public class background_knowledge {
   public static void populateCauseEffectProbabilities() throws Exception {
     Scanner scanner = new Scanner(new File("cause_effect_res.txt"));
     int id = 0;
+    System.out.println("Populating cause effect probabilities");
     while (scanner.hasNextLine()) {
       id++;
       Word_Pair wp = find_WP(id);
-      Word_Pair wp2 = find_WP(wp);
-      try {
+      if (wp !=null) { 
+        Word_Pair wp2 = find_WP(wp);
+        try {
+          scanner.next();
+        } catch (NoSuchElementException e) {
+          continue;
+        }
         scanner.next();
-      } catch (NoSuchElementException e) {
-        continue;
-      }
-      scanner.next();
-      Double effect = scanner.nextDouble();
-      scanner.next();
-      Double cause = scanner.nextDouble();
-      wp.cause_effect_one.add(new dPair(cause, effect));
-      wp2.cause_effect_one.add(new dPair(cause, effect));
+        Double effect = scanner.nextDouble();
+        scanner.next();
+        Double cause = scanner.nextDouble();
+        wp.cause_effect_one.add(new dPair(cause, effect));
+        wp2.cause_effect_one.add(new dPair(cause, effect));
 
-      scanner.next();
-      scanner.next();
-      effect = scanner.nextDouble();
-      scanner.next();
-      cause = scanner.nextDouble();
-      wp.cause_effect_two.add(new dPair(cause, effect));
-      wp2.cause_effect_two.add(new dPair(cause, effect));
+        scanner.next();
+        scanner.next();
+        effect = scanner.nextDouble();
+        scanner.next();
+        cause = scanner.nextDouble();
+        wp.cause_effect_two.add(new dPair(cause, effect));
+        wp2.cause_effect_two.add(new dPair(cause, effect));
+        //System.out.println(id);
+      } else {
+        return;
+      }
     }
   }
 
@@ -397,29 +404,34 @@ public class background_knowledge {
   public static void populateEventProbabilities() throws Exception{
      Scanner scanner = new Scanner(new File("ling_event_res.txt"));
     int id = 0;
+    System.out.println("Populating event probabilities");
     while (scanner.hasNextLine()) {
       id++;
       Word_Pair wp = find_WP(id);
-      Word_Pair wp2 = find_WP(wp);
+      if (wp != null) {
+        Word_Pair wp2 = find_WP(wp);
 
-      try {
+        try {
+          scanner.next();
+        } catch (NoSuchElementException e) {
+          continue;
+        }
         scanner.next();
-      } catch (NoSuchElementException e) {
-        continue;
-      }
-      scanner.next();
-      Double event = scanner.nextDouble();
-      scanner.next();
-      Double nonevent = scanner.nextDouble();
-      wp.evt_nevt_one.add(new dPair(event, nonevent));
-      wp2.evt_nevt_one.add(new dPair(event, nonevent));
-      scanner.next();
-      scanner.next();
-      event = scanner.nextDouble();
-      scanner.next();
-      nonevent = scanner.nextDouble();
-      wp.evt_nevt_two.add(new dPair(event, nonevent));
-      wp2.evt_nevt_two.add(new dPair(event, nonevent));
+        Double event = scanner.nextDouble();
+        scanner.next();
+        Double nonevent = scanner.nextDouble();
+        wp.evt_nevt_one.add(new dPair(event, nonevent));
+        wp2.evt_nevt_one.add(new dPair(event, nonevent));
+        scanner.next();
+        scanner.next();
+        event = scanner.nextDouble();
+        scanner.next();
+        nonevent = scanner.nextDouble();
+        wp.evt_nevt_two.add(new dPair(event, nonevent));
+        wp2.evt_nevt_two.add(new dPair(event, nonevent));
+        //System.out.println(id);
+      } else 
+        return;
     }
   }
   //=================================================================================
@@ -565,13 +577,13 @@ public class background_knowledge {
   	sortVerbVerbByScore();
 
     System.out.println("ECA\n");
-  	for (Word_Pair wp : all_verb_pairs) {
+  	/*for (Word_Pair wp : all_verb_pairs) {
   		System.out.print(wp.toString());
       for (int i = wp.toString().length(); i < 40; i++) {
         System.out.print(" ");
       }
       System.out.println(wp.score);
-  	}
+  	}*/
 
     // ICA
     Collections.sort(all_verb_pairs);
@@ -585,13 +597,13 @@ public class background_knowledge {
     sortVerbVerbByScore();
 
     System.out.println("\nICA\n");
-    for (Word_Pair wp : all_verb_pairs) {
-      System.out.print(wp.toString());
+    /*for (Word_Pair wp : all_verb_pairs) {
+      //System.out.print(wp.toString());
       for (int i = wp.toString().length(); i < 40; i++) {
         System.out.print(" ");
       }
       System.out.println(wp.score);
-    }
+    }*/
 
     // BCA
     Collections.sort(all_verb_pairs);
@@ -605,13 +617,13 @@ public class background_knowledge {
     sortVerbVerbByScore();
 
     System.out.println("\nBCA\n");
-    for (Word_Pair wp : all_verb_pairs) {
-      System.out.print(wp.toString());
+    /*for (Word_Pair wp : all_verb_pairs) {
+      //System.out.print(wp.toString());
       for (int i = wp.toString().length(); i < 40; i++) {
         System.out.print(" ");
       }
       System.out.println(wp.score);
-    }
+    }*/
 
     // Output the Knowledge Base to a file called knowledge_base_causal.txt;
     PrintWriter pw = new PrintWriter(new File("knowledge_base_causal.txt"));
