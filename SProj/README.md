@@ -1,27 +1,32 @@
 CausalRelExtractor
 ==================
 
-This is an implemtation of Mehwish Riaz's PhD thesis
+This is an implementation of Mehwish Riaz's PhD thesis, "Mining Novel Sources Of Knowledge To Identify Causal
+Information In Text". 
+
+We have created a system which automatically creates a training corpus, trains a classifier on this corpus, then uses the classifier, along with extracted background knowledge, to determine whether events in the given text are causal or non-causal.
+
+Bibliography
+============
+
+Our bibliography for this project can be found at: https://www.github.com/hammadmazhar1/causalrelextractor/Documentation/Bibliography/Bibliography.md
 
 How To Run
 ==========
 
-Stanford POS Tagger
--------------------
 WordNet must be installed before running code
 
 Export environment variable WNHOME before running code. WNHOME is the Wordnet directory
 for Windows it would look like "C:\Program Files\WordNet-3.0"
 and for Linux/Unix it would look like "/usr/local/WordNet-3.0"
 
-	javac -cp "lib\*" *.java
-	java -cp ".;lib\*" filename
-
-Stanford Parser	
----------------
-
+To run individual files,
 	javac -cp "lib\*" *.java
 	java -Xmx512m -cp ".;lib\*" filename
+
+To run the entire package,
+	cd to the main causalrelextractor directory
+	./run.sh
 
 The Code
 ========
@@ -43,11 +48,6 @@ create_explicit_corpus.java
 	* Outputs their counts to count_verb_verb.txt (for reference purposes, not important)
 	* Outputs their counts along with their sentences, the cause and effect in that sentence, and what context they appear in (causal or non-causal marker in the sentence) to input_features_tagged.txt
 
-analyze_files.java (unused so far)
-----------------------------------
-* Takes in a collection of files
-* Finds the verb-verb pairs in sentences which are most likely to encode causality or non-causality
-
 create_verb_verb_pairs_with_sentences.java
 ------------------------------------------
 * Takes in a collection of files
@@ -58,3 +58,12 @@ generate_features.java
 ----------------------
 * Takes in a file with verb-verb pairs (with their counts, sentences, etc. - input_features.txt, input_features_tagged.txt)
 * Generates an output file with the provided filename which contains data formatted in a way which can be fed to the supervised Mallet Classifier.
+
+gen_event_features.java
+-----------------------
+* Takes in a file with verb-verb pairs (with their counts, sentences, etc. - input_features.txt, input_features_tagged.txt)
+* Generates an output file with the provided filename which contains data formatted in a way which can be fed to the supervised Mallet Classifier.
+
+TimeMLParser.java
+-----------------
+* Takes in TimeML annotated files to extract event and non-event instances.
