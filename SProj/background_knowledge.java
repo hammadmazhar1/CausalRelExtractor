@@ -278,18 +278,13 @@ public class background_knowledge {
     numFiles = scanner.nextInt();
     totalNumWords = scanner.nextInt();
     totalSentences = scanner.nextInt();
-    int count = 0;
+    
     while (scanner.hasNextLine()) {
       int i1 = scanner.nextInt();
-      //System.out.println(i1);
       int i2 = scanner.nextInt();
-      //System.out.println(i2);
       String s = scanner.next();
-      //System.out.println(s);
       Word_Count wc = new Word_Count(s, i1, i2);
       doc_count_words.add(wc);
-      count++;
-      //System.out.println(count+"\n");
     }
     scanner.close();
  	}
