@@ -20,7 +20,8 @@ To run individual files,
 	java -Xmx512m -cp ".;lib\*" filename
 
 To run the entire package,
-	cd to the main causalrelextractor directory
+
+	cd "...causalrelextractor"
 	./run.sh
 
 The Code
