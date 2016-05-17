@@ -21,7 +21,7 @@ To run individual files,
 
 To run the entire package,
 
-	cd "...causalrelextractor"
+	cd "causalrelextractor"
 	./run.sh
 
 The Code
