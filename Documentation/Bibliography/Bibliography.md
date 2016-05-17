@@ -1,9 +1,5 @@
-Text Analytics
-==============
-
 Miscellaneous
 -------------
-
 * 2002 FLAIRS - Text Mining for Causal Relations.pdf
 * 2006 ACL - Extracting Opinions, Opinion Holders, and Topics Expressed in Online News Media Text.pdf
 * 2008 LREC - Causal Relation Extraction.pdf
@@ -22,7 +18,6 @@ Miscellaneous
 
 Corefence Resolution
 --------------------
-
 * 2009 ACL - Graph-based Event Coreference Resolution.pdf
 * 2010 ACL - Unsupervised Event Corefernce Resolution with Rich Linguistic Features.pdf
 * 2012 EMNLP - Joint Entity and Event Coreference Resolution across Documents.pdf
@@ -32,17 +27,14 @@ Corefence Resolution
 
 Discourse Parsers
 -----------------
-
 * 2013 ACL - Single-Document Summarization as a Tree Knapsack Problem.pdf
 * 2014 EMNLP - Dependency Based Discourse Parser for Single-Document Summarization.pdf
 * Rhetorical Structure Theory.pdf
 
 Mehwish Riaz
 ------------
-
 * Mehwish_Riaz.pdf
 
 Statistan - Moodistan
 ---------------------
-
 * Statistan.pdf
